@@ -103,20 +103,14 @@ public class Vertex {
 
   @Override
   public String toString() {
-    return "Vertex{"
-        + "id="
-        + id
-        + ", inDegree="
-        + inDegree
-        + ", outDegree="
-        + outDegree
-        + ", dm="
-        + dm
-        + ", pf="
-        + pf
-        + ", label='"
-        + label
-        + '\''
-        + '}';
+    return "Vertex{" +
+        "id=" + id +
+        ", inDegree=" + inDegree +
+        ", outDegree=" + outDegree +
+        ", dm=" + dm +
+        ", pf=" + pf +
+        ", label='" + label + '\'' +
+        ", psiElement=" + psiElement +
+        '}';
   }
 }

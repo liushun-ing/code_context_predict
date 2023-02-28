@@ -53,6 +53,14 @@ public class TargetGraphOperator {
       vertices.add(methodVertex);
       edges.add(new Edge(methodVertex, fieldVertex, EdgeLabel.CALL));
     }
+    // 查找谁申明了这个字段
+    PsiClass containingClass = psiField.getContainingClass();
+    if (elementIsInProject(containingClass)) {
+      id++;
+      Vertex vertex = new Vertex(id, "CLASS", containingClass);
+      vertices.add(vertex);
+      edges.add(new Edge(vertex, fieldVertex, EdgeLabel.DECLARE));
+    }
     return new Graph(vertices, edges);
   }
 

@@ -1,9 +1,7 @@
 package com.example.demo1.data;
 
 import com.example.demo1.operation.TableDataOperator;
-import com.example.demo1.operation.TargetGraphOperator;
 import com.example.demo1.plugin.model.MyTableModel;
-import com.example.demo1.vf3.graph.Graph;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -17,20 +15,41 @@ import java.util.Date;
 import java.util.List;
 
 public class DataCenter {
+  /**
+   * 当前打开的项目对象
+   */
   public static Project PROJECT;
-  // 时间间隙
+
+  /**
+   * 时间间隔
+   */
   public static int TIME_INTERVAL = 5;
-  // 预测步长
+
+  /**
+   * 预测步长
+   */
   public static int PREDICTION_STEP = 1;
 
-  // 用于代码使用
+  /**
+   * 预测的建议数据对象,中转数据
+   */
   public static List<SuggestionData> SUGGESTION_LIST = new ArrayList<>();
 
-  // 用于toolWindow展示
+  /**
+   * 表格模型，用于ToolWindow右侧的列表展示
+   */
   public static MyTableModel TABLE_MODEL = new MyTableModel(null, Constants.HEAD);
-  // 既要用于展示，也要用于代码分析
+
+  /**
+   * 树模型，用于ToolWindow的左侧树结构展示
+   */
   public static DefaultTreeModel TREE_MODEL = new DefaultTreeModel(new DefaultMutableTreeNode(new ContextTaskData(), true));
 
+  /**
+   * 重置插件数据结构
+   *
+   * @param project 当前项目对象
+   */
   public static void reset(Project project) {
     PROJECT = project;
     TIME_INTERVAL = 5;
@@ -41,14 +60,38 @@ public class DataCenter {
     TREE_MODEL.reload();
   }
 
+  /**
+   * 获取树模型的根节点
+   *
+   * @return 根节点
+   */
   public static DefaultMutableTreeNode getTreeModelRoot() {
     return (DefaultMutableTreeNode) TREE_MODEL.getRoot();
   }
 
+  /**
+   * 获取一个新的树节点
+   *
+   * @param o 用户数据对象
+   * @param allowsChildren 是否允许孩子节点存在
+   * @return 新的树节点对象
+   */
   public static DefaultMutableTreeNode getNewNode(Object o, boolean allowsChildren) {
     return new DefaultMutableTreeNode(new ContextTaskData(o), allowsChildren);
   }
 
+  /**
+   * 更新SUGGESTION_LIST，在末尾追加
+   *
+   * @param list 新的列表项
+   */
+  public static void updateSuggestionList(List<SuggestionData> list) {
+    SUGGESTION_LIST.addAll(list);
+  }
+
+  /**
+   * 更新表格模型，将SUGGESTION_LIST的数据转换为table数据，并更新表格
+   */
   public static void updateTableModel() {
     Object[][] rows = new Object[SUGGESTION_LIST.size()][];
     for (int i = 0; i < SUGGESTION_LIST.size(); i++) {
@@ -85,6 +128,9 @@ public class DataCenter {
     }
   }
 
+  /**
+   * 过滤TimeInterval内的建议数据项
+   */
   public static void filterSuggestionDataInTimeInterval() {
     for (int i = 0; i < SUGGESTION_LIST.size(); i++) {
       SuggestionData suggestionData = SUGGESTION_LIST.get(i);
