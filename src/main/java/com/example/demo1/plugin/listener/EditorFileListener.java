@@ -29,7 +29,6 @@ public class EditorFileListener implements FileEditorManagerListener {
   public void selectionChanged(@NotNull FileEditorManagerEvent event) {
     FileEditorManagerListener.super.selectionChanged(event);
     VirtualFile newFile = event.getNewFile();
-    addNewTaskContext(newFile);
 
     PsiFile psiFile = PsiManager.getInstance(project).findFile(newFile);
     if (psiFile == null) {
@@ -40,6 +39,7 @@ public class EditorFileListener implements FileEditorManagerListener {
       return;
     }
     selectedTextEditor.getSelectionModel().addSelectionListener(new MySelectionListener());
+//    addNewTaskContext(newFile);
   }
 
   public void addNewTaskContext(@NotNull VirtualFile file) {

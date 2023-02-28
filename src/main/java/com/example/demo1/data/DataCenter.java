@@ -1,5 +1,6 @@
 package com.example.demo1.data;
 
+import com.example.demo1.operation.TableDataOperator;
 import com.example.demo1.operation.TargetGraphOperator;
 import com.example.demo1.plugin.model.MyTableModel;
 import com.example.demo1.vf3.graph.Graph;
@@ -11,8 +12,8 @@ import com.intellij.psi.PsiMethod;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class DataCenter {
@@ -23,7 +24,7 @@ public class DataCenter {
   public static int PREDICTION_STEP = 1;
 
   // 用于代码使用
-  public static List<SuggestionData> SUGGESTION_LIST = new LinkedList<>();
+  public static List<SuggestionData> SUGGESTION_LIST = new ArrayList<>();
 
   // 用于toolWindow展示
   public static MyTableModel TABLE_MODEL = new MyTableModel(null, Constants.HEAD);
@@ -46,6 +47,14 @@ public class DataCenter {
 
   public static DefaultMutableTreeNode getNewNode(Object o, boolean allowsChildren) {
     return new DefaultMutableTreeNode(new ContextTaskData(o), allowsChildren);
+  }
+
+  public static void updateTableModel() {
+    Object[][] rows = new Object[SUGGESTION_LIST.size()][];
+    for (int i = 0; i < SUGGESTION_LIST.size(); i++) {
+      rows[i] = TableDataOperator.convertSuggestionData(SUGGESTION_LIST.get(i));
+    }
+    TABLE_MODEL.setDataVector(rows, Constants.HEAD);
   }
 
   /**
@@ -72,6 +81,18 @@ public class DataCenter {
             j--;
           }
         }
+      }
+    }
+  }
+
+  public static void filterSuggestionDataInTimeInterval() {
+    for (int i = 0; i < SUGGESTION_LIST.size(); i++) {
+      SuggestionData suggestionData = SUGGESTION_LIST.get(i);
+      long time = suggestionData.getGenerateTime().getTime();
+      long nowTime = new Date().getTime();
+      if (time < (nowTime - TIME_INTERVAL * 1000L)) {
+        SUGGESTION_LIST.remove(i);
+        i--;
       }
     }
   }
@@ -109,6 +130,7 @@ public class DataCenter {
       DefaultMutableTreeNode newField = getNewNode(psiField, false);
       newClass.add(newField);
       DataCenter.TREE_MODEL.insertNodeInto(newClass, DataCenter.getTreeModelRoot(), DataCenter.getTreeModelRoot().getChildCount());
+      DataCenter.TREE_MODEL.reload();
     } else {
       for (int i = 0; i < findNode.getChildCount(); i++) {
         DefaultMutableTreeNode childAt = (DefaultMutableTreeNode) findNode.getChildAt(i);
@@ -124,8 +146,7 @@ public class DataCenter {
       DataCenter.TREE_MODEL.insertNodeInto(newField, findNode, findNode.getChildCount());
     }
     filterNodeInTimeInterval();
-    Graph graph = TargetGraphOperator.buildTargetGraph(psiField);
-    System.out.println("graph: " + graph);
+    TableDataOperator.executePrediction(psiField);
   }
 
   /**
@@ -148,6 +169,7 @@ public class DataCenter {
       DefaultMutableTreeNode newMethod = getNewNode(psiMethod, false);
       newClass.add(newMethod);
       DataCenter.TREE_MODEL.insertNodeInto(newClass, DataCenter.getTreeModelRoot(), DataCenter.getTreeModelRoot().getChildCount());
+      DataCenter.TREE_MODEL.reload();
     } else {
       for (int i = 0; i < findNode.getChildCount(); i++) {
         DefaultMutableTreeNode childAt = (DefaultMutableTreeNode) findNode.getChildAt(i);
@@ -163,7 +185,7 @@ public class DataCenter {
       DataCenter.TREE_MODEL.insertNodeInto(newMethod, findNode, findNode.getChildCount());
     }
     filterNodeInTimeInterval();
-    TargetGraphOperator.buildTargetGraph(psiMethod);
+    TableDataOperator.executePrediction(psiMethod);
   }
 
   /**
@@ -183,7 +205,7 @@ public class DataCenter {
       userObject.setCaptureTime(new Date());
     }
     filterNodeInTimeInterval();
-    TargetGraphOperator.buildTargetGraph(psiClass);
+    TableDataOperator.executePrediction(psiClass);
   }
 
   /**

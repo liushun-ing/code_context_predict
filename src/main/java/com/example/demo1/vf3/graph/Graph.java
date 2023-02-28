@@ -85,6 +85,21 @@ public class Graph {
     return null;
   }
 
+  /**
+   * 统计图中出现的节点类型和数量
+   */
+  public void countLabelQuantity() {
+    this.vertexLabels = new HashMap<>();
+    // 统计图中出现的节点类型和数量
+    for (Vertex v : vertices) {
+      if (this.vertexLabels.containsKey(v.getLabel())) {
+        this.vertexLabels.replace(v.getLabel(), this.vertexLabels.get(v.getLabel()) + 1);
+      } else {
+        this.vertexLabels.put(v.getLabel(), 1);
+      }
+    }
+  }
+
   public Graph() {}
 
   public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
