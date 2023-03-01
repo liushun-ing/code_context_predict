@@ -8,6 +8,7 @@ import com.example.demo1.vf3.algorithm.Solution;
 import com.example.demo1.vf3.graph.Graph;
 import com.example.demo1.vf3.graph.Vertex;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 
@@ -40,7 +41,7 @@ public class TableDataOperator {
     if (psiField == null) {
       return;
     }
-    commonExecute(TargetGraphOperator.buildTargetGraph(psiField));
+    commonExecute(TargetGraphOperator.buildTargetGraph(psiField), psiField);
     System.out.println("field prediction complete");
   }
 
@@ -54,7 +55,7 @@ public class TableDataOperator {
     if (psiMethod == null) {
       return;
     }
-    commonExecute(TargetGraphOperator.buildTargetGraph(psiMethod));
+    commonExecute(TargetGraphOperator.buildTargetGraph(psiMethod), psiMethod);
     System.out.println("method prediction complete");
   }
 
@@ -68,7 +69,7 @@ public class TableDataOperator {
     if (psiClass == null) {
       return;
     }
-    commonExecute(TargetGraphOperator.buildTargetGraph(psiClass));
+    commonExecute(TargetGraphOperator.buildTargetGraph(psiClass), psiClass);
     System.out.println("class prediction complete");
   }
 
@@ -76,8 +77,9 @@ public class TableDataOperator {
    * 相同的执行逻辑，根据目标图执行一系列预测操作
    *
    * @param targetGraph 目标图
+   * @param psiElement 目标元素
    */
-  public static void commonExecute(Graph targetGraph) {
+  public static void commonExecute(Graph targetGraph, PsiElement psiElement) {
     if (targetGraph == null) {
       return;
     }
@@ -96,7 +98,7 @@ public class TableDataOperator {
     // 更新SUGGESTION_LIST,需要过滤掉时间过期的
     DataCenter.filterSuggestionDataInTimeInterval();
     // 数据转换
-    ArrayList<SuggestionData> newSuggestionDataList = convertSuggestionList(confidenceMap, targetGraph);
+    ArrayList<SuggestionData> newSuggestionDataList = convertSuggestionList(confidenceMap, targetGraph, psiElement);
     System.out.println("suggestion list: " + newSuggestionDataList);
     // 将新得到的节点加入到SUGGESTION_LIST中
     DataCenter.updateSuggestionList(newSuggestionDataList);
@@ -119,10 +121,13 @@ public class TableDataOperator {
     for (Vertex v : vertices) {
       confidenceMap.put(v.getId(), 0.0);
     }
+    // 统计所有匹配子图数目
+    Double occurrenceSum = 0.0;
     // 不同的模式图
     for (ArrayList<Solution> solutions : executeResult) {
       // 不同的解决方案
       for (Solution solution : solutions) {
+        occurrenceSum++;
         // 映射节点对
         for (MatchCouple mc : solution.getSolution()) {
           Vertex targetV = mc.getV(); // 拿到目标图映射的节点
@@ -132,14 +137,11 @@ public class TableDataOperator {
         }
       }
     }
-    // 统计所有节点出现的次数和
-    Double occurrenceSum = 0.0;
-    for (Double count : confidenceMap.values()) {
-      occurrenceSum += count;
-    }
-    // 计算比例
-    for (Integer i : confidenceMap.keySet()) {
-      confidenceMap.replace(i, confidenceMap.get(i) / occurrenceSum);
+    if (occurrenceSum != 0) {
+      // 计算比例
+      for (Integer i : confidenceMap.keySet()) {
+        confidenceMap.replace(i, confidenceMap.get(i) / occurrenceSum);
+      }
     }
     return confidenceMap;
   }
@@ -151,12 +153,16 @@ public class TableDataOperator {
    * @param targetGraph   目标图
    * @return table数据列表
    */
-  public static ArrayList<SuggestionData> convertSuggestionList(HashMap<Integer, Double> confidenceMap, Graph targetGraph) {
+  public static ArrayList<SuggestionData> convertSuggestionList(HashMap<Integer, Double> confidenceMap, Graph targetGraph, PsiElement psiElement) {
     ArrayList<SuggestionData> suggestionList = new ArrayList<>();
     for (Integer i : confidenceMap.keySet()) {
       if (confidenceMap.get(i) > 0) {
         Vertex vertexById = targetGraph.getVertexById(i);
-        suggestionList.add(new SuggestionData(vertexById.getPsiElement(), vertexById.getLabel(), confidenceMap.get(i).toString().substring(0, 6)));
+        if (!vertexById.getPsiElement().equals(psiElement)) {
+          String s = confidenceMap.get(i).toString();
+          s = s.length() > 6 ? s.substring(0, 6) : s;
+          suggestionList.add(new SuggestionData(vertexById.getPsiElement(), vertexById.getLabel(), s));
+        }
       }
     }
     return suggestionList;

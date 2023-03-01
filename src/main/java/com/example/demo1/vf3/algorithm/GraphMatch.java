@@ -111,9 +111,9 @@ public class GraphMatch {
     for (Edge e : targetGraph.getEdges()) {
       // 只有一条边与外界有联系就行
       if ((ArrayUtils.containsTargetGraphVertex(sc, e.getStartV().getId())
-              && !ArrayUtils.containsTargetGraphVertex(sc, e.getEndV().getId()))
+          && !ArrayUtils.containsTargetGraphVertex(sc, e.getEndV().getId()))
           || (ArrayUtils.containsTargetGraphVertex(sc, e.getEndV().getId())
-              && !ArrayUtils.containsTargetGraphVertex(sc, e.getStartV().getId()))) {
+          && !ArrayUtils.containsTargetGraphVertex(sc, e.getStartV().getId()))) {
         // 并且还要已经匹配的数量小于模式图节点个数
         if (sc.size() < NG1.size()) {
           return false;
@@ -231,17 +231,15 @@ public class GraphMatch {
       // 一个在一个不在，就可以添加dm
       for (Edge e : patternGraph.getEdges()) {
         if (ArrayUtils.contains(NG1, e.getStartV().getId())) {
-          if (ArrayUtils.contains(NG1, e.getEndV().getId())) {
-            continue;
-          }
-          Vertex vById = patternGraph.getVertexById(e.getEndV().getId());
-          vById.setDm(vById.getDm() + 1);
-        } else {
           if (!ArrayUtils.contains(NG1, e.getEndV().getId())) {
-            continue;
+            Vertex vById = patternGraph.getVertexById(e.getEndV().getId());
+            vById.setDm(vById.getDm() + 1);
           }
-          Vertex vById = patternGraph.getVertexById(e.getStartV().getId());
-          vById.setDm(vById.getDm() + 1);
+        } else {
+          if (ArrayUtils.contains(NG1, e.getEndV().getId())) {
+            Vertex vById = patternGraph.getVertexById(e.getStartV().getId());
+            vById.setDm(vById.getDm() + 1);
+          }
         }
       }
       // 然后进行下一次循环
@@ -620,7 +618,7 @@ public class GraphMatch {
     }
     for (Vertex pv : targetGraph.getVertices()) {
       if (pv.getId() != _v.getId() && !ArrayUtils.containsTargetGraphVertex(sc, pv.getId())) {
-        if (patternGraph.containsEdge(_v.getId(), pv.getId())
+        if (targetGraph.containsEdge(_v.getId(), pv.getId())
             && ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 1)) {
           targetNodes.add(pv);
         }
@@ -643,7 +641,7 @@ public class GraphMatch {
     }
     for (Vertex pv : targetGraph.getVertices()) {
       if (pv.getId() != _v.getId() && !ArrayUtils.containsTargetGraphVertex(sc, pv.getId())) {
-        if (patternGraph.containsEdge(pv.getId(), _v.getId())
+        if (targetGraph.containsEdge(pv.getId(), _v.getId())
             && ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 0)) {
           targetNodes.add(pv);
         }
@@ -666,7 +664,7 @@ public class GraphMatch {
     }
     for (Vertex pv : targetGraph.getVertices()) {
       if (pv.getId() != _v.getId() && !ArrayUtils.containsTargetGraphVertex(sc, pv.getId())) {
-        if (patternGraph.containsEdge(_v.getId(), pv.getId())
+        if (targetGraph.containsEdge(_v.getId(), pv.getId())
             && ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 0)) {
           targetNodes.add(pv);
         }
@@ -689,7 +687,7 @@ public class GraphMatch {
     }
     for (Vertex pv : targetGraph.getVertices()) {
       if (pv.getId() != _v.getId() && !ArrayUtils.containsTargetGraphVertex(sc, pv.getId())) {
-        if (patternGraph.containsEdge(pv.getId(), _v.getId())
+        if (targetGraph.containsEdge(pv.getId(), _v.getId())
             && ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 1)) {
           targetNodes.add(pv);
         }
@@ -724,16 +722,16 @@ public class GraphMatch {
       if (pv.getId() != _u.getId() && !ArrayUtils.containsPatternGraphVertex(sc, pv.getId())) {
         if (patternGraph.containsEdge(pv.getId(), _u.getId())
             && (!ArrayUtils.containsEdgeOnScList(sc, pv.getId(), patternGraph, 0, 1)
-                && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), patternGraph, 0, 0))) {
+            && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), patternGraph, 0, 0))) {
           patternNodes.add(pv);
         }
       }
     }
     for (Vertex pv : targetGraph.getVertices()) {
       if (pv.getId() != _v.getId() && !ArrayUtils.containsTargetGraphVertex(sc, pv.getId())) {
-        if (patternGraph.containsEdge(pv.getId(), _v.getId())
+        if (targetGraph.containsEdge(pv.getId(), _v.getId())
             && (!ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 1)
-                && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 0))) {
+            && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 0))) {
           targetNodes.add(pv);
         }
       }
@@ -749,16 +747,16 @@ public class GraphMatch {
       if (pv.getId() != _u.getId() && !ArrayUtils.containsPatternGraphVertex(sc, pv.getId())) {
         if (patternGraph.containsEdge(_u.getId(), pv.getId())
             && (!ArrayUtils.containsEdgeOnScList(sc, pv.getId(), patternGraph, 0, 1)
-                && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), patternGraph, 0, 0))) {
+            && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), patternGraph, 0, 0))) {
           patternNodes.add(pv);
         }
       }
     }
     for (Vertex pv : targetGraph.getVertices()) {
       if (pv.getId() != _v.getId() && !ArrayUtils.containsTargetGraphVertex(sc, pv.getId())) {
-        if (patternGraph.containsEdge(_v.getId(), pv.getId())
+        if (targetGraph.containsEdge(_v.getId(), pv.getId())
             && (!ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 1)
-                && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 0))) {
+            && !ArrayUtils.containsEdgeOnScList(sc, pv.getId(), targetGraph, 1, 0))) {
           targetNodes.add(pv);
         }
       }
