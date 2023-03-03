@@ -15,6 +15,12 @@ public class Vertex {
     return this.inDegree + this.outDegree;
   }
 
+  public void reset() {
+    this.dm = 0;
+    this.pf = 0;
+  }
+
+
   public Vertex() {}
 
   public Vertex(int id, String label) {

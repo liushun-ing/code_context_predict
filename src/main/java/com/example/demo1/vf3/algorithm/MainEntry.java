@@ -26,6 +26,8 @@ public class MainEntry {
     ArrayList<ArrayList<Solution>> solutionsList = new ArrayList<>();
     for (Graph patternGraph : patternGraphs) {
       solutionsList.add(GraphMatch.VF3(patternGraph, targetGraph));
+      // 匹配之后要重置模式图，方便下一次匹配
+      patternGraph.resetGraph();
     }
     return solutionsList;
   }

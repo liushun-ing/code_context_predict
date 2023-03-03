@@ -151,10 +151,13 @@ public class TargetGraphOperator {
           } else if (referenceElement instanceof PsiMethod) {
             // 调用了某个方法
             PsiMethod callMethod = (PsiMethod) referenceElement;
-            id[0]++;
-            Vertex callVertex = new Vertex(id[0], "METHOD", callMethod);
-            vertices.add(callVertex);
-            edges.add(new Edge(originVertex, callVertex, EdgeLabel.CALL));
+            // 只有当这个方法是项目中的某个类声明的才能用作扩展
+            if (elementIsInProject(callMethod.getContainingClass())) {
+              id[0]++;
+              Vertex callVertex = new Vertex(id[0], "METHOD", callMethod);
+              vertices.add(callVertex);
+              edges.add(new Edge(originVertex, callVertex, EdgeLabel.CALL));
+            }
           }
         }
       }

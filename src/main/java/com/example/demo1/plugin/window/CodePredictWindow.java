@@ -45,8 +45,8 @@ public class CodePredictWindow {
         column.setPreferredWidth(100);
         column.setMinWidth(60);
       } else {
-        column.setPreferredWidth(50);
-        column.setMinWidth(20);
+        column.setPreferredWidth(40);
+        column.setMinWidth(40);
       }
     }
 

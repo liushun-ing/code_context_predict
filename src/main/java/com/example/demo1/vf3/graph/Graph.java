@@ -100,20 +100,21 @@ public class Graph {
     }
   }
 
+  /**
+   * 重置图，也就是重置一些统计数据
+   */
+  public void resetGraph() {
+    for (Vertex v : vertices) {
+      v.reset();
+    }
+  }
+
   public Graph() {}
 
   public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     this.vertices = vertices;
     this.edges = edges;
-    this.vertexLabels = new HashMap<>();
-    // 统计图中出现的节点类型和数量
-    for (Vertex v : vertices) {
-      if (this.vertexLabels.containsKey(v.getLabel())) {
-        this.vertexLabels.replace(v.getLabel(), this.vertexLabels.get(v.getLabel()) + 1);
-      } else {
-        this.vertexLabels.put(v.getLabel(), 1);
-      }
-    }
+    countLabelQuantity();
     calculateInAndOutDegree();
   }
 

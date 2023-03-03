@@ -81,6 +81,25 @@ public class DataCenter {
   }
 
   /**
+   * 判断是否建议列表中已经存在该元素，如果存在，则更新置信值，取最大值
+   *
+   * @param psiElement 目标元素
+   * @param newConfidence 新的置信值
+   * @return 是否存在
+   */
+  public static boolean existInSuggestionList(PsiElement psiElement, String newConfidence) {
+    for (SuggestionData s : SUGGESTION_LIST) {
+      if (s.getElement().equals(psiElement)) {
+        if (Double.parseDouble(newConfidence) > Double.parseDouble(s.getConfidence())) {
+          s.setConfidence(newConfidence);
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * 更新SUGGESTION_LIST，在末尾追加
    *
    * @param list 新的列表项
@@ -93,11 +112,13 @@ public class DataCenter {
    * 更新表格模型，将SUGGESTION_LIST的数据转换为table数据，并更新表格
    */
   public static void updateTableModel() {
-    Object[][] rows = new Object[SUGGESTION_LIST.size()][];
-    for (int i = 0; i < SUGGESTION_LIST.size(); i++) {
-      rows[i] = TableDataOperator.convertSuggestionData(SUGGESTION_LIST.get(i));
+    ArrayList<Object> rows = new ArrayList<>();
+    for (int i = TABLE_MODEL.getRowCount() - 1; i >= 0; i--) {
+      TABLE_MODEL.removeRow(i);
     }
-    TABLE_MODEL.setDataVector(rows, Constants.HEAD);
+    for (int i = 0; i < SUGGESTION_LIST.size(); i++) {
+      TABLE_MODEL.addRow(TableDataOperator.convertSuggestionData(SUGGESTION_LIST.get(i)));
+    }
   }
 
   /**

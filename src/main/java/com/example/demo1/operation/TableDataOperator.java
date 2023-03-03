@@ -87,19 +87,16 @@ public class TableDataOperator {
     TargetGraphOperator.assignStereotypeRole(targetGraph);
     // 分配原型之后需要重新统计图的节点类型
     targetGraph.countLabelQuantity();
-    System.out.println("target graph: " + targetGraph);
     // 执行VF3子图匹配算法
     MainEntry mainEntry = new MainEntry();
     ArrayList<ArrayList<Solution>> executeResult = mainEntry.execute(targetGraph);
     System.out.println("execute Result: " + executeResult);
     // 计算置信度
     HashMap<Integer, Double> confidenceMap = calculateConfidence(executeResult, targetGraph);
-    System.out.println("confidence map: " + confidenceMap);
     // 更新SUGGESTION_LIST,需要过滤掉时间过期的
     DataCenter.filterSuggestionDataInTimeInterval();
     // 数据转换
     ArrayList<SuggestionData> newSuggestionDataList = convertSuggestionList(confidenceMap, targetGraph, psiElement);
-    System.out.println("suggestion list: " + newSuggestionDataList);
     // 将新得到的节点加入到SUGGESTION_LIST中
     DataCenter.updateSuggestionList(newSuggestionDataList);
     // 更新tableModel
@@ -161,7 +158,9 @@ public class TableDataOperator {
         if (!vertexById.getPsiElement().equals(psiElement)) {
           String s = confidenceMap.get(i).toString();
           s = s.length() > 6 ? s.substring(0, 6) : s;
-          suggestionList.add(new SuggestionData(vertexById.getPsiElement(), vertexById.getLabel(), s));
+          if (!DataCenter.existInSuggestionList(vertexById.getPsiElement(), s)) {
+            suggestionList.add(new SuggestionData(vertexById.getPsiElement(), vertexById.getLabel(), s));
+          }
         }
       }
     }
