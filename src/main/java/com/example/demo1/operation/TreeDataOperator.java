@@ -8,8 +8,12 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import java.util.Date;
 
+/**
+ * 树数据节点操作类
+ */
 public class TreeDataOperator {
 
   /**
@@ -89,12 +93,12 @@ public class TreeDataOperator {
     }
     DefaultMutableTreeNode findNode = findExist(containingClass);
     if (findNode == null) {
-      DefaultMutableTreeNode newClass = getNewNode(containingClass, true);
+      // 没有捕获到父节点时，直接将他添加到根节点下
       DefaultMutableTreeNode newField = getNewNode(psiField, false);
-      newClass.add(newField);
-      DataCenter.TREE_MODEL.insertNodeInto(newClass, getTreeModelRoot(), getTreeModelRoot().getChildCount());
+      DataCenter.TREE_MODEL.insertNodeInto(newField, getTreeModelRoot(), getTreeModelRoot().getChildCount());
       DataCenter.TREE_MODEL.reload();
     } else {
+      // 如果父节点已经捕获，就更新父节点时间，并添加该节点到父节点下
       for (int i = 0; i < findNode.getChildCount(); i++) {
         DefaultMutableTreeNode childAt = (DefaultMutableTreeNode) findNode.getChildAt(i);
         ContextTaskData userObject = (ContextTaskData) childAt.getUserObject();
@@ -128,10 +132,8 @@ public class TreeDataOperator {
     }
     DefaultMutableTreeNode findNode = findExist(containingClass);
     if (findNode == null) {
-      DefaultMutableTreeNode newClass = getNewNode(containingClass, true);
       DefaultMutableTreeNode newMethod = getNewNode(psiMethod, false);
-      newClass.add(newMethod);
-      DataCenter.TREE_MODEL.insertNodeInto(newClass, getTreeModelRoot(), getTreeModelRoot().getChildCount());
+      DataCenter.TREE_MODEL.insertNodeInto(newMethod, getTreeModelRoot(), getTreeModelRoot().getChildCount());
       DataCenter.TREE_MODEL.reload();
     } else {
       for (int i = 0; i < findNode.getChildCount(); i++) {
@@ -163,12 +165,51 @@ public class TreeDataOperator {
     if (exist == null) {
       DefaultMutableTreeNode newNode = getNewNode(psiClass, true);
       DataCenter.TREE_MODEL.insertNodeInto(newNode, getTreeModelRoot(), getTreeModelRoot().getChildCount());
+      adjustTreeStructure(psiClass, newNode);
     } else {
-      ContextTaskData userObject = (ContextTaskData) exist.getUserObject();
-      userObject.setCaptureTime(new Date());
+      ContextTaskData existUserObject = (ContextTaskData) exist.getUserObject();
+      existUserObject.setCaptureTime(new Date());
+      adjustTreeStructure(psiClass, exist);
     }
     filterNodeInTimeInterval();
     TableDataOperator.executePrediction(psiClass);
+  }
+
+  /**
+   * 调整树结构，就是遍历所有根节点下面的节点，判断根节点下面的method和field节点是不是应该放入他的孩子中
+   *
+   * @param psiClass 捕获的class元素
+   * @param currNode 当前父node
+   */
+  public static void adjustTreeStructure(PsiClass psiClass, DefaultMutableTreeNode currNode) {
+    // 还需要做一件事，就是遍历所有根节点下面的节点，判断根节点下面的method和field节点是不是应该放入他的孩子中
+    DefaultMutableTreeNode treeModelRoot = getTreeModelRoot();
+    for (int i = 0; i < treeModelRoot.getChildCount(); i++) {
+      DefaultMutableTreeNode childAt = (DefaultMutableTreeNode) treeModelRoot.getChildAt(i);
+      ContextTaskData userObject = (ContextTaskData) childAt.getUserObject();
+      Object captureElement = userObject.getCaptureElement();
+      if (captureElement instanceof PsiField) {
+        PsiField captureField = (PsiField) captureElement;
+        if (captureField.getContainingClass() == null) {
+          continue;
+        }
+        if (captureField.getContainingClass().equals(psiClass)) {
+          DataCenter.TREE_MODEL.removeNodeFromParent(childAt);
+          i--;
+          DataCenter.TREE_MODEL.insertNodeInto(getNewNode(captureField, false), currNode, currNode.getChildCount());
+        }
+      } else if (captureElement instanceof PsiMethod) {
+        PsiMethod captureMethod = (PsiMethod) captureElement;
+        if (captureMethod.getContainingClass() == null) {
+          continue;
+        }
+        if (captureMethod.getContainingClass().equals(psiClass)) {
+          DataCenter.TREE_MODEL.removeNodeFromParent(childAt);
+          i--;
+          DataCenter.TREE_MODEL.insertNodeInto(getNewNode(captureMethod, false), currNode, currNode.getChildCount());
+        }
+      }
+    }
   }
 
   /**

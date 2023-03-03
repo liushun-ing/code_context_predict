@@ -17,6 +17,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * 表格数据操作类
+ */
 public class TableDataOperator {
   /**
    * 根据suggestionData转换为table展示的数据类型

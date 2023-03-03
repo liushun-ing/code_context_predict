@@ -16,6 +16,9 @@ import com.intellij.util.Query;
 
 import java.util.*;
 
+/**
+ * 目标图操作类
+ */
 public class TargetGraphOperator {
 
   /**
