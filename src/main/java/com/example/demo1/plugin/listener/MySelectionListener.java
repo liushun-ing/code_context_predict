@@ -1,6 +1,6 @@
 package com.example.demo1.plugin.listener;
 
-import com.example.demo1.data.DataCenter;
+import com.example.demo1.operation.TreeDataOperator;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.SelectionEvent;
 import com.intellij.openapi.editor.event.SelectionListener;
@@ -29,17 +29,17 @@ public class MySelectionListener implements SelectionListener {
     if (element != null) {
       PsiField parentField = PsiTreeUtil.getParentOfType(element, PsiField.class);
       if (parentField != null) {
-        DataCenter.addNewData(parentField);
+        TreeDataOperator.addNewData(parentField);
         return;
       }
       PsiMethod parentMethod = PsiTreeUtil.getParentOfType(element, PsiMethod.class);
       if (parentMethod != null) {
-        DataCenter.addNewData(parentMethod);
+        TreeDataOperator.addNewData(parentMethod);
         return;
       }
       PsiClass parentClass = PsiTreeUtil.getParentOfType(element, PsiClass.class);
       if (parentClass != null) {
-        DataCenter.addNewData(parentClass);
+        TreeDataOperator.addNewData(parentClass);
         return;
       }
       // DataCenter.addNewOtherData(element);

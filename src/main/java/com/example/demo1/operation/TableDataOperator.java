@@ -13,7 +13,9 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class TableDataOperator {
   /**
@@ -29,6 +31,61 @@ public class TableDataOperator {
     raw[2] = suggestionData.getStereotype();
     raw[3] = suggestionData.getConfidence();
     return raw;
+  }
+
+  /**
+   * 过滤TimeInterval内的建议数据项
+   */
+  public static void filterSuggestionDataInTimeInterval() {
+    for (int i = 0; i < DataCenter.SUGGESTION_LIST.size(); i++) {
+      SuggestionData suggestionData = DataCenter.SUGGESTION_LIST.get(i);
+      long time = suggestionData.getGenerateTime().getTime();
+      long nowTime = new Date().getTime();
+      if (time < (nowTime - DataCenter.TIME_INTERVAL * 1000L)) {
+        DataCenter.SUGGESTION_LIST.remove(i);
+        i--;
+      }
+    }
+  }
+
+  /**
+   * 判断是否建议列表中已经存在该元素，如果存在，则更新置信值，取最大值
+   *
+   * @param psiElement 目标元素
+   * @param newConfidence 新的置信值
+   * @return 是否存在
+   */
+  public static boolean existInSuggestionList(PsiElement psiElement, String newConfidence) {
+    for (SuggestionData s : DataCenter.SUGGESTION_LIST) {
+      if (s.getElement().equals(psiElement)) {
+        if (Double.parseDouble(newConfidence) > Double.parseDouble(s.getConfidence())) {
+          s.setConfidence(newConfidence);
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * 更新SUGGESTION_LIST，在末尾追加
+   *
+   * @param list 新的列表项
+   */
+  public static void updateSuggestionList(List<SuggestionData> list) {
+    DataCenter.SUGGESTION_LIST.addAll(list);
+  }
+
+  /**
+   * 更新表格模型，将SUGGESTION_LIST的数据转换为table数据，并更新表格
+   */
+  public static void updateTableModel() {
+    for (int i = DataCenter.TABLE_MODEL.getRowCount() - 1; i >= 0; i--) {
+      DataCenter.TABLE_MODEL.removeRow(i);
+    }
+    for (int i = 0; i < DataCenter.SUGGESTION_LIST.size(); i++) {
+      DataCenter.TABLE_MODEL.addRow(TableDataOperator.convertSuggestionData(DataCenter.SUGGESTION_LIST.get(i)));
+    }
   }
 
   /**
@@ -94,13 +151,13 @@ public class TableDataOperator {
     // 计算置信度
     HashMap<Integer, Double> confidenceMap = calculateConfidence(executeResult, targetGraph);
     // 更新SUGGESTION_LIST,需要过滤掉时间过期的
-    DataCenter.filterSuggestionDataInTimeInterval();
+    filterSuggestionDataInTimeInterval();
     // 数据转换
     ArrayList<SuggestionData> newSuggestionDataList = convertSuggestionList(confidenceMap, targetGraph, psiElement);
     // 将新得到的节点加入到SUGGESTION_LIST中
-    DataCenter.updateSuggestionList(newSuggestionDataList);
+    updateSuggestionList(newSuggestionDataList);
     // 更新tableModel
-    DataCenter.updateTableModel();
+    updateTableModel();
   }
 
 
@@ -158,7 +215,7 @@ public class TableDataOperator {
         if (!vertexById.getPsiElement().equals(psiElement)) {
           String s = confidenceMap.get(i).toString();
           s = s.length() > 6 ? s.substring(0, 6) : s;
-          if (!DataCenter.existInSuggestionList(vertexById.getPsiElement(), s)) {
+          if (!existInSuggestionList(vertexById.getPsiElement(), s)) {
             suggestionList.add(new SuggestionData(vertexById.getPsiElement(), vertexById.getLabel(), s));
           }
         }

@@ -1,5 +1,6 @@
 package com.example.demo1.plugin.listener;
 
+import com.example.demo1.operation.TreeDataOperator;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
@@ -8,7 +9,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.example.demo1.data.DataCenter;
 import org.jetbrains.annotations.NotNull;
 
 public class EditorFileListener implements FileEditorManagerListener {
@@ -50,7 +50,7 @@ public class EditorFileListener implements FileEditorManagerListener {
     PsiClass[] psiClasses = new PsiClass[1];
     PsiTreeUtil.findChildrenOfType(psiFile.getNavigationElement(), PsiClass.class).toArray(psiClasses);
     if (psiClasses[0] != null) {
-      DataCenter.addNewData(psiClasses[0]);
+      TreeDataOperator.addNewData(psiClasses[0]);
     }
   }
 
