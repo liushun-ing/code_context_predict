@@ -8,6 +8,9 @@ import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 数据中心
+ */
 public class DataCenter {
   /**
    * 当前打开的项目对象

@@ -11,6 +11,9 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 编辑器事件监听
+ */
 public class EditorFileListener implements FileEditorManagerListener {
 
   private final Project project;

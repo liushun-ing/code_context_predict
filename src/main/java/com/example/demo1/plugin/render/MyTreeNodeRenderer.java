@@ -5,13 +5,15 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
-import com.intellij.ui.Gray;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
+/**
+ * 树节点渲染规则
+ */
 public class MyTreeNodeRenderer extends DefaultTreeCellRenderer {
 
   private static final Icon otherIcon = IconLoader.getIcon("/img/other.svg", MyTreeNodeRenderer.class);

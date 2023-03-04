@@ -8,7 +8,6 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import java.util.Date;
 
 /**
@@ -28,7 +27,7 @@ public class TreeDataOperator {
   /**
    * 获取一个新的树节点
    *
-   * @param o 用户数据对象
+   * @param o              用户数据对象
    * @param allowsChildren 是否允许孩子节点存在
    * @return 新的树节点对象
    */
@@ -66,6 +65,7 @@ public class TreeDataOperator {
 
   /**
    * 添加其他节点
+   *
    * @param o PsiElement
    */
   public static void addNewOtherData(PsiElement o) {
@@ -80,6 +80,7 @@ public class TreeDataOperator {
 
   /**
    * 添加字段节点，存在则更新时间
+   *
    * @param psiField 捕捉的字段
    */
   public static void addNewData(PsiField psiField) {
@@ -118,6 +119,7 @@ public class TreeDataOperator {
 
   /**
    * 添加方法节点,存在则更新时间
+   *
    * @param psiMethod 捕捉的方法
    */
   public static void addNewData(PsiMethod psiMethod) {
@@ -155,6 +157,7 @@ public class TreeDataOperator {
 
   /**
    * 添加类节点,存在则更新时间
+   *
    * @param psiClass 捕捉的类
    */
   public static void addNewData(PsiClass psiClass) {
@@ -214,6 +217,7 @@ public class TreeDataOperator {
 
   /**
    * 判断节点中是否存在改类
+   *
    * @param psiClass 需要判断的类节点
    * @return 是否存在
    */
@@ -224,7 +228,8 @@ public class TreeDataOperator {
 
   /**
    * 辅助判断的递归函数
-   * @param node 当前节点
+   *
+   * @param node     当前节点
    * @param psiClass 目标类节点
    * @return 是否存在
    */
@@ -248,8 +253,9 @@ public class TreeDataOperator {
 
   /**
    * 查找某个类节点是否存在，并返回
+   *
    * @param psiClass 目标类节点
-   * @return 匹配成功的节点,无则null
+   * @return 匹配成功的节点, 无则null
    */
   public static DefaultMutableTreeNode findExist(PsiClass psiClass) {
     DefaultMutableTreeNode root = getTreeModelRoot();
@@ -258,7 +264,8 @@ public class TreeDataOperator {
 
   /**
    * 辅助查找的递归函数
-   * @param node 当前节点
+   *
+   * @param node     当前节点
    * @param psiClass 目标类节点
    * @return 匹配的节点，无则null
    */

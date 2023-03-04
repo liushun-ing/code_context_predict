@@ -1,8 +1,10 @@
 package com.example.demo1.vf3.graph;
 
-import com.example.demo1.vf3.graph.Vertex;
 import com.example.demo1.vf3.utils.EdgeLabel;
 
+/**
+ * 图边
+ */
 public class Edge {
   private Vertex startV;
   private Vertex endV;

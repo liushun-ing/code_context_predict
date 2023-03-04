@@ -26,11 +26,11 @@ public class TargetGraphOperator {
   /**
    * 判断一个元素是不是已经与某个节点建立关系了,先判断节点是否存在，再判断是否有边
    *
-   * @param vertices 已经创建的节点集合
-   * @param psiElement 目标元素
-   * @param edges 边集合
+   * @param vertices     已经创建的节点集合
+   * @param psiElement   目标元素
+   * @param edges        边集合
    * @param originVertex 源节点
-   * @param type 类型，关系的指向性，0=originVertex->psiElement 1=psiElement->originVertex
+   * @param type         类型，关系的指向性，0=originVertex->psiElement 1=psiElement->originVertex
    * @return 是否存在
    */
   public static boolean relationNotExist(ArrayList<Vertex> vertices, PsiElement psiElement, ArrayList<Edge> edges, Vertex originVertex, int type) {
@@ -98,8 +98,8 @@ public class TargetGraphOperator {
    * 一步扩展一个FIELD节点子图
    *
    * @param originVertex 目标FIELD节点
-   * @param vertices 节点集合
-   * @param edges 边集合
+   * @param vertices     节点集合
+   * @param edges        边集合
    */
   public static void extendFieldGraph(Vertex originVertex, ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     PsiField psiField = (PsiField) originVertex.getPsiElement();
@@ -140,9 +140,10 @@ public class TargetGraphOperator {
 
   /**
    * 一步扩展一个METHOD节点子图
+   *
    * @param originVertex 目标METHOD节点
-   * @param vertices 节点集合
-   * @param edges 边集合
+   * @param vertices     节点集合
+   * @param edges        边集合
    */
   public static void extendMethodGraph(Vertex originVertex, ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     PsiMethod psiMethod = (PsiMethod) originVertex.getPsiElement();
@@ -252,9 +253,10 @@ public class TargetGraphOperator {
 
   /**
    * 一步扩展一个CLASS节点子图
+   *
    * @param originVertex 目标CLASS节点
-   * @param vertices 节点集合
-   * @param edges 边集合
+   * @param vertices     节点集合
+   * @param edges        边集合
    */
   public static void extendClassGraph(Vertex originVertex, ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     PsiClass psiClass = (PsiClass) originVertex.getPsiElement();
@@ -347,7 +349,7 @@ public class TargetGraphOperator {
    * 2步扩展目标图
    *
    * @param vertices 节点集合
-   * @param edges 边集合
+   * @param edges    边集合
    */
   public static void extendTwoStepGraph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     // 从第二个节点开始遍历扩展就好了，注意扩展的截至点
@@ -367,6 +369,7 @@ public class TargetGraphOperator {
 
   /**
    * 判断一个PsiClass是不是在该项目中
+   *
    * @param psiClass 待检查的PsiClass元素
    * @return 是否在该项目中
    */

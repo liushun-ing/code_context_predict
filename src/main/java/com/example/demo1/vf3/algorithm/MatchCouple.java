@@ -2,12 +2,21 @@ package com.example.demo1.vf3.algorithm;
 
 import com.example.demo1.vf3.graph.Vertex;
 
-/** MatchCouple 匹配节点对类 */
+/**
+ * MatchCouple 匹配节点对类
+ */
 public class MatchCouple {
-  private Vertex u; // 模式图
-  private Vertex v; // 目标图
+  /**
+   * 模式图节点
+   */
+  private Vertex u;
+  /**
+   * 目标图节点
+   */
+  private Vertex v;
 
-  public MatchCouple() {}
+  public MatchCouple() {
+  }
 
   public MatchCouple(Vertex u, Vertex v) {
     this.u = u;

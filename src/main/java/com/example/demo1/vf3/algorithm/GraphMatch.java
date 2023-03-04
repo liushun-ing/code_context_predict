@@ -8,12 +8,17 @@ import com.example.demo1.vf3.utils.ArrayUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * VF3匹配算法逻辑类
+ */
 public class GraphMatch {
   private static ArrayList<Integer> NG1; // 模式图的节点处理顺序
   private static HashMap<Integer, Integer> Parent; // 节点的父节点
   private static ArrayList<Solution> Solutions; // 结果,可能有多个
 
-  /** 初始化 */
+  /**
+   * 初始化
+   */
   public static void initVF3() {
     NG1 = new ArrayList<>();
     Parent = new HashMap<>();
@@ -24,8 +29,8 @@ public class GraphMatch {
    * VF3算法
    *
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
-   * @return 节点映射结果数组,失败返回null
+   * @param targetGraph  目标图
+   * @return 节点映射结果数组, 失败返回null
    */
   public static ArrayList<Solution> VF3(Graph patternGraph, Graph targetGraph) {
     initVF3();
@@ -46,9 +51,9 @@ public class GraphMatch {
   /**
    * 匹配算法
    *
-   * @param sc 上一个匹配的状态
+   * @param sc           上一个匹配的状态
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否匹配
    */
   public static boolean match(ArrayList<MatchCouple> sc, Graph patternGraph, Graph targetGraph) {
@@ -99,7 +104,7 @@ public class GraphMatch {
   /**
    * 判断当前状态是否是死状态，也就是不一致状态
    *
-   * @param sc 当前状态
+   * @param sc          当前状态
    * @param targetGraph 目标图
    * @return 是否死状态
    */
@@ -128,7 +133,7 @@ public class GraphMatch {
    * pin,pout是小图中的节点出入度小于等于大图节点出入度的概率和
    *
    * @param patternGraph 模式图
-   * @param targetGraph 大图，也就是目标图
+   * @param targetGraph  大图，也就是目标图
    */
   public static void computeProbabilities(Graph patternGraph, Graph targetGraph) {
     for (Vertex v : patternGraph.getVertices()) {
@@ -275,7 +280,7 @@ public class GraphMatch {
   /**
    * 获取下一对候选节点，还有三个参数S,NG1,Parent
    *
-   * @param coupleC 上一个插入的节点对
+   * @param coupleC     上一个插入的节点对
    * @param patterGraph 模式图，小图
    * @param targetGraph 目标图，大图
    * @return 下一对候选节点对
@@ -325,7 +330,7 @@ public class GraphMatch {
   /**
    * 根据当前的状态，获取下一个需要匹配的节点
    *
-   * @param sc 上一个匹配的状态
+   * @param sc           上一个匹配的状态
    * @param patternGraph 模式图
    * @return 匹配到的节点，否则null
    */
@@ -351,10 +356,10 @@ public class GraphMatch {
   /**
    * 获取目标图中可选的下一个候选节点
    *
-   * @param sc 上一个匹配的状态sc
-   * @param coupleC 上一个匹配的节点对（uc, vc）
+   * @param sc          上一个匹配的状态sc
+   * @param coupleC     上一个匹配的节点对（uc, vc）
    * @param targetGraph 目标图
-   * @param un un节点
+   * @param un          un节点
    * @return 下一个节点/没有则为null
    */
   public static Vertex getNextNode(
@@ -396,12 +401,12 @@ public class GraphMatch {
   /**
    * 获取目标图中可选的下一个候选节点，添加了关于_v节点的限制
    *
-   * @param sc 上一个匹配的状态
-   * @param coupleC 上一个匹配的节点对
-   * @param _v 限制节点
-   * @param type 类型，是寻找前置节点 0 还是寻找后置节点 1
+   * @param sc          上一个匹配的状态
+   * @param coupleC     上一个匹配的节点对
+   * @param _v          限制节点
+   * @param type        类型，是寻找前置节点 0 还是寻找后置节点 1
    * @param targetGraph 目标图
-   * @param un un节点
+   * @param un          un节点
    * @return 下一个候选v节点，否则为null
    */
   public static Vertex getNextNode(
@@ -459,10 +464,10 @@ public class GraphMatch {
    * 判断sc加入coupleN之后是否符合一致性，判断规则分为语义和结构一致性 IsFeasible(sc, un, vn) = Fs(sc, un, vn) ^ Ft(sc, un, vn)
    * Ft(sc, un, vn) = Fc(sc, un, vn) ^ Fla1(sc, un, vn) ^ Fla2(sc, un, vn)
    *
-   * @param sc 当前状态
-   * @param coupleN 选出来的一对候选节点
+   * @param sc           当前状态
+   * @param coupleN      选出来的一对候选节点
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否符合boolean
    */
   public static boolean isFeasible(
@@ -473,10 +478,10 @@ public class GraphMatch {
   /**
    * 判断语义一致性,Fs只需要判断新增的这两个节点是否类型相同，并且加入这两个节点后，添加的边的类型是否也是一致的，注意这里只需要针对模式图中的节点和边进行验证
    *
-   * @param sc 状态sc
-   * @param coupleN 新的候选节点对（un,vn）
+   * @param sc           状态sc
+   * @param coupleN      新的候选节点对（un,vn）
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否语义一致boolean
    */
   public static boolean fs(
@@ -533,10 +538,10 @@ public class GraphMatch {
   /**
    * 判断加入新节点后结构是否一致，包括本身，1-lookahead,2-lookahead
    *
-   * @param sc 状态sc
-   * @param coupleN 新的候选节点对（un,vn）
+   * @param sc           状态sc
+   * @param coupleN      新的候选节点对（un,vn）
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否结构一致boolean
    */
   public static boolean ft(
@@ -549,10 +554,10 @@ public class GraphMatch {
   /**
    * 判断新增的这一对节点与已经匹配的节点之间的联系是不是一一对应的，这个规则和上面fs规则差不多，但是这个地方两边都要判断不能出现一个图有一个图没有的情况
    *
-   * @param sc 状态sc
-   * @param coupleN 新的候选节点对（un,vn）
+   * @param sc           状态sc
+   * @param coupleN      新的候选节点对（un,vn）
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否一致boolean
    */
   public static boolean fc(
@@ -594,10 +599,10 @@ public class GraphMatch {
    * 1-lookahead
    * 一步往前看，实际是看，新增的节点对（un，vn）的后继节点和前继节点是不是符合要求，un的后继（前继）节点必须小于等于vn的后继（前继）节点数，也就是模式图要小于等于大图
    *
-   * @param sc 状态sc
-   * @param coupleN 新的候选节点对（un,vn）
+   * @param sc           状态sc
+   * @param coupleN      新的候选节点对（un,vn）
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否一致boolean
    */
   public static boolean fla1(
@@ -703,10 +708,10 @@ public class GraphMatch {
   /**
    * 2-lookahead 两步向前预测，这里就是看V~,实际就是剩下的未匹配的也不是已匹配节点的前继后继节点的节点，这些节点需要满足小于等于的关系
    *
-   * @param sc 状态sc
-   * @param coupleN 新的候选节点对（un,vn）
+   * @param sc           状态sc
+   * @param coupleN      新的候选节点对（un,vn）
    * @param patternGraph 模式图
-   * @param targetGraph 目标图
+   * @param targetGraph  目标图
    * @return 是否一致boolean
    */
   public static boolean fla2(
@@ -771,7 +776,7 @@ public class GraphMatch {
    * 比较模式图和目标图节点列表中各个类型的节点是否是小于关系
    *
    * @param patternNodes 模式图节点列表
-   * @param targetNodes 目标图节点列表
+   * @param targetNodes  目标图节点列表
    * @return 是否满足关系
    */
   public static boolean compareLabelNodeSize(

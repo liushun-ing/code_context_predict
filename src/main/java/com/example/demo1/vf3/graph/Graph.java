@@ -1,10 +1,11 @@
 package com.example.demo1.vf3.graph;
 
-import com.example.demo1.vf3.graph.Vertex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * 图
+ */
 public class Graph {
   private ArrayList<Vertex> vertices;
   private ArrayList<Edge> edges;
@@ -28,7 +29,9 @@ public class Graph {
     this.edges.add(edge);
   }
 
-  /** 统计图的各个节点的入度和出度 */
+  /**
+   * 统计图的各个节点的入度和出度
+   */
   public void calculateInAndOutDegree() {
     for (Edge e : this.edges) {
       Vertex vo = this.getVertexById(e.getStartV().getId());
@@ -56,7 +59,7 @@ public class Graph {
   /**
    * 判断图中是否存在边
    *
-   * @param inId 起始节点id
+   * @param inId  起始节点id
    * @param outId 终止节点id
    * @return 是否存在
    */
@@ -72,7 +75,7 @@ public class Graph {
   /**
    * 查找图中是否存在一条边，并返回该条边,不判断label
    *
-   * @param inId in节点
+   * @param inId  in节点
    * @param outId out节点
    * @return 是否存在
    */
@@ -109,7 +112,8 @@ public class Graph {
     }
   }
 
-  public Graph() {}
+  public Graph() {
+  }
 
   public Graph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     this.vertices = vertices;

@@ -12,7 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/** BuildGraph 图的构造类，读取文件，构造图结构 */
+/**
+ * BuildGraph 图的构造类，读取文件，构造图结构
+ */
 public class BuildGraph {
   /**
    * 模式图集合，声明为static,防止多次构建，减少损耗

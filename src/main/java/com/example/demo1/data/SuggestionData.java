@@ -9,14 +9,25 @@ import java.util.Date;
  * 建议结果数据的对象
  */
 public class SuggestionData {
+  /**
+   * Psi元素
+   */
   private PsiElement element;
-  // 包路径
+  /**
+   * 包路径
+   */
   private String packagePath;
-  // 原型
+  /**
+   * 原型
+   */
   private String stereotype;
-  // 置信值
+  /**
+   * 置信值
+   */
   private String confidence;
-  // 生成的时间
+  /**
+   * 生成的时间
+   */
   private Date generateTime;
 
   public SuggestionData() {

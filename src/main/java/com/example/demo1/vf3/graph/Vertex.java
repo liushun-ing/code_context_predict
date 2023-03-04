@@ -2,6 +2,9 @@ package com.example.demo1.vf3.graph;
 
 import com.intellij.psi.PsiElement;
 
+/**
+ * 图节点
+ */
 public class Vertex {
   private int id;
   private int inDegree;
@@ -21,7 +24,8 @@ public class Vertex {
   }
 
 
-  public Vertex() {}
+  public Vertex() {
+  }
 
   public Vertex(int id, String label) {
     this.id = id;

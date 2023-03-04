@@ -2,11 +2,17 @@ package com.example.demo1.vf3.algorithm;
 
 import java.util.ArrayList;
 
-/** solution 映射结果类 */
+/**
+ * solution 映射结果类
+ */
 public class Solution {
+  /**
+   * 解决方案，匹配节点对的集合
+   */
   private ArrayList<MatchCouple> solution;
 
-  public Solution() {}
+  public Solution() {
+  }
 
   public Solution(ArrayList<MatchCouple> solution) {
     this.solution = solution;

@@ -8,6 +8,9 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 选择事件监听
+ */
 public class MySelectionListener implements SelectionListener {
   @Override
   public void selectionChanged(@NotNull SelectionEvent e) {

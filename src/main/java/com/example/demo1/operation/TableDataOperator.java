@@ -54,7 +54,7 @@ public class TableDataOperator {
   /**
    * 判断是否建议列表中已经存在该元素，如果存在，则更新置信值，取最大值
    *
-   * @param psiElement 目标元素
+   * @param psiElement    目标元素
    * @param newConfidence 新的置信值
    * @return 是否存在
    */
@@ -137,7 +137,7 @@ public class TableDataOperator {
    * 相同的执行逻辑，根据目标图执行一系列预测操作
    *
    * @param targetGraph 目标图
-   * @param psiElement 目标元素
+   * @param psiElement  目标元素
    */
   public static void commonExecute(Graph targetGraph, PsiElement psiElement) {
     if (targetGraph == null) {

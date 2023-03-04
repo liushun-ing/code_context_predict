@@ -4,12 +4,14 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
-import com.intellij.ui.Gray;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
+/**
+ * 表格单元格渲染规则
+ */
 public class MyTableCellRender extends DefaultTableCellRenderer {
   private static final Icon otherIcon = IconLoader.getIcon("/img/other.svg", MyTableCellRender.class);
   private static final Icon classIcon = IconLoader.getIcon("/img/class.svg", MyTableCellRender.class);

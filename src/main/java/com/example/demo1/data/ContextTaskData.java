@@ -2,8 +2,17 @@ package com.example.demo1.data;
 
 import java.util.Date;
 
+/**
+ * 上下文任务数据体
+ */
 public class ContextTaskData {
+  /**
+   * 捕获时间
+   */
   Date captureTime;
+  /**
+   * 捕获元素
+   */
   Object captureElement;
 
   public ContextTaskData() {
