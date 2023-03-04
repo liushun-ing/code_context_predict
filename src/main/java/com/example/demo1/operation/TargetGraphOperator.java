@@ -24,83 +24,78 @@ public class TargetGraphOperator {
   public static int ID = 0;
 
   /**
-   * 判断一个元素是不是已经添加到节点集合中过
+   * 判断一个元素是不是已经与某个节点建立关系了,先判断节点是否存在，再判断是否有边
    *
    * @param vertices 已经创建的节点集合
    * @param psiElement 目标元素
+   * @param edges 边集合
+   * @param originVertex 源节点
+   * @param type 类型，关系的指向性，0=originVertex->psiElement 1=psiElement->originVertex
    * @return 是否存在
    */
-  public static boolean vertexNotExist(ArrayList<Vertex> vertices, PsiElement psiElement) {
+  public static boolean relationNotExist(ArrayList<Vertex> vertices, PsiElement psiElement, ArrayList<Edge> edges, Vertex originVertex, int type) {
     if (psiElement == null) {
       return false;
     }
     for (Vertex v : vertices) {
+      // 先判断是不是已经有该元素创建的节点
       if (v.getPsiElement().equals(psiElement)) {
-        return false;
+        for (Edge e : edges) {
+          if (type == 0) {
+            if (e.getStartV().equals(originVertex) && e.getEndV().equals(v)) {
+              return false;
+            }
+          } else {
+            if (e.getStartV().equals(v) && e.getEndV().equals(originVertex)) {
+              return false;
+            }
+          }
+        }
+        // 如果存在节点了，但是不存在边，直接返回false
+        return true;
       }
     }
     return true;
   }
 
   /**
-   * 根据psiField构建目标图
+   * 根据psiElement(PsiField,PsiMethod,PsiClass)构建目标图
    *
-   * @param psiField 目标psiField节点
+   * @param psiElement 目标psiElement节点
    * @return 目标图
    */
-  public static Graph buildTargetGraph(PsiField psiField) {
-    if (DataCenter.PROJECT == null || psiField == null) {
+  public static Graph buildTargetGraph(PsiElement psiElement) {
+    if (DataCenter.PROJECT == null || psiElement == null) {
       return null;
     }
     // 构建图
     ArrayList<Vertex> vertices = new ArrayList<>();
     ArrayList<Edge> edges = new ArrayList<>();
     ID = 1;
-    Vertex fieldVertex = new Vertex(ID, "FIELD", psiField);
-    vertices.add(fieldVertex);
-    extendFieldGraph(fieldVertex, vertices, edges);
-    return new Graph(vertices, edges);
-  }
-
-  /**
-   * 根据psiMethod构建目标图
-   *
-   * @param psiMethod 目标psiMethod节点
-   * @return 目标图
-   */
-  public static Graph buildTargetGraph(PsiMethod psiMethod) {
-    if (DataCenter.PROJECT == null || psiMethod == null) {
+    if (psiElement instanceof PsiField) {
+      Vertex fieldVertex = new Vertex(ID, "FIELD", psiElement);
+      vertices.add(fieldVertex);
+      extendFieldGraph(fieldVertex, vertices, edges);
+    } else if (psiElement instanceof PsiMethod) {
+      Vertex originVertex = new Vertex(ID, "METHOD", psiElement);
+      vertices.add(originVertex);
+      extendMethodGraph(originVertex, vertices, edges);
+    } else if (psiElement instanceof PsiClass) {
+      Vertex originVertex = new Vertex(ID, "CLASS", psiElement);
+      vertices.add(originVertex);
+      extendClassGraph(originVertex, vertices, edges);
+    } else {
       return null;
     }
-    ArrayList<Vertex> vertices = new ArrayList<>();
-    ArrayList<Edge> edges = new ArrayList<>();
-    ID = 1;
-    Vertex originVertex = new Vertex(ID, "METHOD", psiMethod);
-    vertices.add(originVertex);
-    extendMethodGraph(originVertex, vertices, edges);
-    return new Graph(vertices, edges);
-  }
-
-  /**
-   * 根据psiClass构建目标图
-   *
-   * @param psiClass 目标psiClass节点
-   * @return 目标图
-   */
-  public static Graph buildTargetGraph(PsiClass psiClass) {
-    if (DataCenter.PROJECT == null || psiClass == null) {
-      return null;
+    // 如果预测步长为2，则进行二次扩展
+    if (DataCenter.PREDICTION_STEP == 2) {
+      extendTwoStepGraph(vertices, edges);
     }
-    ArrayList<Vertex> vertices = new ArrayList<>();
-    ArrayList<Edge> edges = new ArrayList<>();
-    Vertex originVertex = new Vertex(ID, "CLASS", psiClass);
-    vertices.add(originVertex);
-    extendClassGraph(originVertex, vertices, edges);
     return new Graph(vertices, edges);
   }
 
   /**
-   * 扩展一个FIELD节点子图
+   * 一步扩展一个FIELD节点子图
    *
    * @param originVertex 目标FIELD节点
    * @param vertices 节点集合
@@ -124,7 +119,7 @@ public class TargetGraphOperator {
     // 构建图
     for (PsiMethod psiMethod : psiMethods) {
       // 直接简单处理，不存在才把他加进去
-      if (vertexNotExist(vertices, psiMethod)) {
+      if (relationNotExist(vertices, psiMethod, edges, originVertex, 1)) {
         ID++;
         Vertex methodVertex = new Vertex(ID, "METHOD", psiMethod);
         vertices.add(methodVertex);
@@ -134,7 +129,7 @@ public class TargetGraphOperator {
     // 查找谁申明了这个字段
     PsiClass containingClass = psiField.getContainingClass();
     if (elementIsInProject(containingClass)) {
-      if (vertexNotExist(vertices, containingClass)) {
+      if (relationNotExist(vertices, containingClass, edges, originVertex, 1)) {
         ID++;
         Vertex vertex = new Vertex(ID, "CLASS", containingClass);
         vertices.add(vertex);
@@ -144,7 +139,7 @@ public class TargetGraphOperator {
   }
 
   /**
-   * 扩展一个METHOD节点子图
+   * 一步扩展一个METHOD节点子图
    * @param originVertex 目标METHOD节点
    * @param vertices 节点集合
    * @param edges 边集合
@@ -169,20 +164,17 @@ public class TargetGraphOperator {
       }
     }
     for (PsiMethod p : useMethods) {
-      if (vertexNotExist(vertices, p)) {
+      if (relationNotExist(vertices, p, edges, originVertex, 1)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", p);
         vertices.add(vertex);
         edges.add(new Edge(vertex, originVertex, EdgeLabel.CALL));
       }
-      if (DataCenter.PREDICTION_STEP == 2) {
-        // 需要进行进一层的搜索
-      }
     }
     // 查找这个方法实现了谁
     PsiMethod[] superMethods = psiMethod.findSuperMethods();
     for (PsiMethod pm : superMethods) {
-      if (vertexNotExist(vertices, pm)) {
+      if (relationNotExist(vertices, pm, edges, originVertex, 0)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", pm);
         vertices.add(vertex);
@@ -202,7 +194,7 @@ public class TargetGraphOperator {
             PsiClass callClass = (PsiClass) constructorCall.getClassReference().resolve();
             // 需要判断这个类是否在这个项目中
             if (elementIsInProject(callClass)) {
-              if (vertexNotExist(vertices, callClass)) {
+              if (relationNotExist(vertices, callClass, edges, originVertex, 0)) {
                 ID++;
                 // 直接与这个类关联
                 Vertex callVertex = new Vertex(ID, "CLASS", callClass);
@@ -223,7 +215,7 @@ public class TargetGraphOperator {
           if (referenceElement instanceof PsiField) {
             // 引用了某个类的字段
             PsiField callField = (PsiField) referenceElement;
-            if (vertexNotExist(vertices, callField)) {
+            if (relationNotExist(vertices, callField, edges, originVertex, 0)) {
               ID++;
               Vertex callVertex = new Vertex(ID, "FIELD", callField);
               vertices.add(callVertex);
@@ -234,7 +226,7 @@ public class TargetGraphOperator {
             PsiMethod callMethod = (PsiMethod) referenceElement;
             // 只有当这个方法是项目中的某个类声明的才能用作扩展
             if (elementIsInProject(callMethod.getContainingClass())) {
-              if (vertexNotExist(vertices, callMethod)) {
+              if (relationNotExist(vertices, callMethod, edges, originVertex, 0)) {
                 ID++;
                 Vertex callVertex = new Vertex(ID, "METHOD", callMethod);
                 vertices.add(callVertex);
@@ -249,7 +241,7 @@ public class TargetGraphOperator {
     // 查找谁实现了这个方法
     Collection<PsiMethod> allOverridingMethod = OverridingMethodsSearch.search(psiMethod).findAll();
     for (PsiMethod pm : allOverridingMethod) {
-      if (vertexNotExist(vertices, pm)) {
+      if (relationNotExist(vertices, pm, edges, originVertex, 1)) {
         ID++;
         Vertex overridingV = new Vertex(ID, "METHOD", pm);
         vertices.add(overridingV);
@@ -259,7 +251,7 @@ public class TargetGraphOperator {
   }
 
   /**
-   * 扩展一个CLASS节点子图
+   * 一步扩展一个CLASS节点子图
    * @param originVertex 目标CLASS节点
    * @param vertices 节点集合
    * @param edges 边集合
@@ -278,14 +270,11 @@ public class TargetGraphOperator {
       }
     }
     for (PsiMethod p : useMethods) {
-      if (vertexNotExist(vertices, p)) {
+      if (relationNotExist(vertices, p, edges, originVertex, 1)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", p);
         vertices.add(vertex);
         edges.add(new Edge(vertex, originVertex, EdgeLabel.CALL));
-      }
-      if (DataCenter.PREDICTION_STEP == 2) {
-        // 需要进行进一层的搜索
       }
     }
     // 查找这个类有没有继承别的类，也就是有没有super class
@@ -293,7 +282,7 @@ public class TargetGraphOperator {
     if (superClass != null) {
       // 需要判断超类是不是属于这个项目
       if (elementIsInProject(superClass)) {
-        if (vertexNotExist(vertices, superClass)) {
+        if (relationNotExist(vertices, superClass, edges, originVertex, 0)) {
           ID++;
           Vertex superVertex = new Vertex(ID, "CLASS", superClass);
           vertices.add(superVertex);
@@ -310,9 +299,9 @@ public class TargetGraphOperator {
         if (implementInterface != null && implementInterface.isInterface()) {
           // 需要判断超类是不是属于这个项目
           if (elementIsInProject(implementInterface)) {
-            if (vertexNotExist(vertices, implementInterface)) {
+            if (relationNotExist(vertices, implementInterface, edges, originVertex, 0)) {
               ID++;
-              Vertex impInterfaceVertex = new Vertex(ID, "CLASS", superClass);
+              Vertex impInterfaceVertex = new Vertex(ID, "CLASS", implementInterface);
               vertices.add(impInterfaceVertex);
               edges.add(new Edge(originVertex, impInterfaceVertex, EdgeLabel.IMPLEMENT));
             }
@@ -325,20 +314,17 @@ public class TargetGraphOperator {
     Query<PsiClass> search = ClassInheritorsSearch.search(psiClass, GlobalSearchScope.projectScope(DataCenter.PROJECT), false);
     Collection<PsiClass> allInheritor = search.findAll();
     for (PsiClass inheritor : allInheritor) {
-      if (vertexNotExist(vertices, inheritor)) {
+      if (relationNotExist(vertices, inheritor, edges, originVertex, 1)) {
         ID++;
         Vertex inheritorVertex = new Vertex(ID, "CLASS", inheritor);
         vertices.add(inheritorVertex);
         edges.add(new Edge(inheritorVertex, originVertex, EdgeLabel.INHERIT));
       }
-      if (DataCenter.PREDICTION_STEP == 2) {
-        // 需要进行进一层的搜索
-      }
     }
     // 遍历这个类的所有声明字段
-    PsiField[] allFields = psiClass.getAllFields();
+    PsiField[] allFields = psiClass.getFields();
     for (PsiField pf : allFields) {
-      if (vertexNotExist(vertices, pf)) {
+      if (relationNotExist(vertices, pf, edges, originVertex, 0)) {
         ID++;
         Vertex vertex = new Vertex(ID, "FIELD", pf);
         vertices.add(vertex);
@@ -348,7 +334,7 @@ public class TargetGraphOperator {
     // 遍历这个类的所有声明方法
     PsiMethod[] allMethod = psiClass.getMethods();
     for (PsiMethod pm : allMethod) {
-      if (vertexNotExist(vertices, pm)) {
+      if (relationNotExist(vertices, pm, edges, originVertex, 0)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", pm);
         vertices.add(vertex);
@@ -356,6 +342,28 @@ public class TargetGraphOperator {
       }
     }
   }
+
+  /**
+   * 2步扩展目标图
+   *
+   * @param vertices 节点集合
+   * @param edges 边集合
+   */
+  public static void extendTwoStepGraph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
+    // 从第二个节点开始遍历扩展就好了，注意扩展的截至点
+    int length = vertices.size();
+    for (int i = 1; i < length; i++) {
+      Vertex currVertex = vertices.get(i);
+      if (currVertex.getPsiElement() instanceof PsiField) {
+        extendFieldGraph(currVertex, vertices, edges);
+      } else if (currVertex.getPsiElement() instanceof PsiMethod) {
+        extendMethodGraph(currVertex, vertices, edges);
+      } else if (currVertex.getPsiElement() instanceof PsiClass) {
+        extendClassGraph(currVertex, vertices, edges);
+      }
+    }
+  }
+
 
   /**
    * 判断一个PsiClass是不是在该项目中
