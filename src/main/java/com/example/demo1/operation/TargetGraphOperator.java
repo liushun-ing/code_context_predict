@@ -73,17 +73,26 @@ public class TargetGraphOperator {
     ArrayList<Edge> edges = new ArrayList<>();
     ID = 1;
     if (psiElement instanceof PsiField) {
-      Vertex fieldVertex = new Vertex(ID, "FIELD", psiElement);
-      vertices.add(fieldVertex);
-      extendFieldGraph(fieldVertex, vertices, edges);
+      PsiField psiField = (PsiField) psiElement;
+      if (elementIsInProject(psiField.getContainingClass())) {
+        Vertex fieldVertex = new Vertex(ID, "FIELD", psiElement);
+        vertices.add(fieldVertex);
+        extendFieldGraph(fieldVertex, vertices, edges);
+      }
     } else if (psiElement instanceof PsiMethod) {
-      Vertex originVertex = new Vertex(ID, "METHOD", psiElement);
-      vertices.add(originVertex);
-      extendMethodGraph(originVertex, vertices, edges);
+      PsiMethod psiMethod = (PsiMethod) psiElement;
+      if (elementIsInProject(psiMethod.getContainingClass())) {
+        Vertex originVertex = new Vertex(ID, "METHOD", psiElement);
+        vertices.add(originVertex);
+        extendMethodGraph(originVertex, vertices, edges);
+      }
     } else if (psiElement instanceof PsiClass) {
-      Vertex originVertex = new Vertex(ID, "CLASS", psiElement);
-      vertices.add(originVertex);
-      extendClassGraph(originVertex, vertices, edges);
+      PsiClass psiClass = (PsiClass) psiElement;
+      if (elementIsInProject(psiClass)) {
+        Vertex originVertex = new Vertex(ID, "CLASS", psiElement);
+        vertices.add(originVertex);
+        extendClassGraph(originVertex, vertices, edges);
+      }
     } else {
       return null;
     }
@@ -119,7 +128,7 @@ public class TargetGraphOperator {
     // 构建图
     for (PsiMethod psiMethod : psiMethods) {
       // 直接简单处理，不存在才把他加进去
-      if (relationNotExist(vertices, psiMethod, edges, originVertex, 1)) {
+      if (elementIsInProject(psiMethod.getContainingClass()) && relationNotExist(vertices, psiMethod, edges, originVertex, 1)) {
         ID++;
         Vertex methodVertex = new Vertex(ID, "METHOD", psiMethod);
         vertices.add(methodVertex);
@@ -149,10 +158,12 @@ public class TargetGraphOperator {
     PsiMethod psiMethod = (PsiMethod) originVertex.getPsiElement();
     // 查找谁声明了这个方法
     PsiClass containingClass = psiMethod.getContainingClass();
-    ID++;
-    Vertex containClassVertex = new Vertex(ID, "CLASS", containingClass);
-    vertices.add(containClassVertex);
-    edges.add(new Edge(containClassVertex, originVertex, EdgeLabel.DECLARE));
+    if (elementIsInProject(containingClass)) {
+      ID++;
+      Vertex containClassVertex = new Vertex(ID, "CLASS", containingClass);
+      vertices.add(containClassVertex);
+      edges.add(new Edge(containClassVertex, originVertex, EdgeLabel.DECLARE));
+    }
     // 查找那些方法调用了这个方法
     Query<PsiReference> usagesSearch = ReferencesSearch.search(psiMethod, GlobalSearchScope.projectScope(DataCenter.PROJECT));
     Collection<PsiReference> allUsages = usagesSearch.findAll();
@@ -165,7 +176,7 @@ public class TargetGraphOperator {
       }
     }
     for (PsiMethod p : useMethods) {
-      if (relationNotExist(vertices, p, edges, originVertex, 1)) {
+      if (elementIsInProject(p.getContainingClass()) && relationNotExist(vertices, p, edges, originVertex, 1)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", p);
         vertices.add(vertex);
@@ -175,7 +186,7 @@ public class TargetGraphOperator {
     // 查找这个方法实现了谁
     PsiMethod[] superMethods = psiMethod.findSuperMethods();
     for (PsiMethod pm : superMethods) {
-      if (relationNotExist(vertices, pm, edges, originVertex, 0)) {
+      if (elementIsInProject(pm.getContainingClass()) && relationNotExist(vertices, pm, edges, originVertex, 0)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", pm);
         vertices.add(vertex);
@@ -216,7 +227,7 @@ public class TargetGraphOperator {
           if (referenceElement instanceof PsiField) {
             // 引用了某个类的字段
             PsiField callField = (PsiField) referenceElement;
-            if (relationNotExist(vertices, callField, edges, originVertex, 0)) {
+            if (elementIsInProject(callField.getContainingClass()) && relationNotExist(vertices, callField, edges, originVertex, 0)) {
               ID++;
               Vertex callVertex = new Vertex(ID, "FIELD", callField);
               vertices.add(callVertex);
@@ -242,7 +253,7 @@ public class TargetGraphOperator {
     // 查找谁实现了这个方法
     Collection<PsiMethod> allOverridingMethod = OverridingMethodsSearch.search(psiMethod).findAll();
     for (PsiMethod pm : allOverridingMethod) {
-      if (relationNotExist(vertices, pm, edges, originVertex, 1)) {
+      if (elementIsInProject(pm.getContainingClass()) && relationNotExist(vertices, pm, edges, originVertex, 1)) {
         ID++;
         Vertex overridingV = new Vertex(ID, "METHOD", pm);
         vertices.add(overridingV);
@@ -272,7 +283,7 @@ public class TargetGraphOperator {
       }
     }
     for (PsiMethod p : useMethods) {
-      if (relationNotExist(vertices, p, edges, originVertex, 1)) {
+      if (elementIsInProject(p.getContainingClass()) && relationNotExist(vertices, p, edges, originVertex, 1)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", p);
         vertices.add(vertex);
@@ -316,7 +327,7 @@ public class TargetGraphOperator {
     Query<PsiClass> search = ClassInheritorsSearch.search(psiClass, GlobalSearchScope.projectScope(DataCenter.PROJECT), false);
     Collection<PsiClass> allInheritor = search.findAll();
     for (PsiClass inheritor : allInheritor) {
-      if (relationNotExist(vertices, inheritor, edges, originVertex, 1)) {
+      if (elementIsInProject(inheritor.getContainingClass()) && relationNotExist(vertices, inheritor, edges, originVertex, 1)) {
         ID++;
         Vertex inheritorVertex = new Vertex(ID, "CLASS", inheritor);
         vertices.add(inheritorVertex);
@@ -326,7 +337,7 @@ public class TargetGraphOperator {
     // 遍历这个类的所有声明字段
     PsiField[] allFields = psiClass.getFields();
     for (PsiField pf : allFields) {
-      if (relationNotExist(vertices, pf, edges, originVertex, 0)) {
+      if (elementIsInProject(pf.getContainingClass()) && relationNotExist(vertices, pf, edges, originVertex, 0)) {
         ID++;
         Vertex vertex = new Vertex(ID, "FIELD", pf);
         vertices.add(vertex);
@@ -336,7 +347,7 @@ public class TargetGraphOperator {
     // 遍历这个类的所有声明方法
     PsiMethod[] allMethod = psiClass.getMethods();
     for (PsiMethod pm : allMethod) {
-      if (relationNotExist(vertices, pm, edges, originVertex, 0)) {
+      if (elementIsInProject(pm.getContainingClass()) && relationNotExist(vertices, pm, edges, originVertex, 0)) {
         ID++;
         Vertex vertex = new Vertex(ID, "METHOD", pm);
         vertices.add(vertex);
