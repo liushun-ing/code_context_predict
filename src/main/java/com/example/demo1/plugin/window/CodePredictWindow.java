@@ -4,6 +4,7 @@ import com.example.demo1.data.Constants;
 import com.example.demo1.data.ContextTaskData;
 import com.example.demo1.data.DataCenter;
 import com.example.demo1.data.SuggestionData;
+import com.example.demo1.plugin.model.MyTableModel;
 import com.example.demo1.plugin.render.MyTableCellRender;
 import com.example.demo1.plugin.render.MyTreeNodeRenderer;
 import com.intellij.codeInsight.navigation.NavigationUtil;
@@ -13,9 +14,14 @@ import com.intellij.psi.PsiElement;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class CodePredictWindow {
   private JPanel CodePredict;
@@ -35,20 +41,30 @@ public class CodePredictWindow {
     for (int i = 0; i < 4; i++) {
       column = SuggestionTable.getColumnModel().getColumn(i);
       if (i == 0) {
-        column.setPreferredWidth(250); // first column is bigger
-        column.setMinWidth(250);
+        column.setPreferredWidth(300); // first column is bigger
+        column.setMinWidth(300);
         column.setCellRenderer(new MyTableCellRender());
       } else if (i == 1) {
-        column.setPreferredWidth(150);
-        column.setMinWidth(100);
+        column.setPreferredWidth(200);
+        column.setMinWidth(150);
       } else if (i == 2) {
-        column.setPreferredWidth(100);
-        column.setMinWidth(60);
+        column.setPreferredWidth(180);
+        column.setMinWidth(130);
       } else {
-        column.setPreferredWidth(40);
-        column.setMinWidth(40);
+        column.setPreferredWidth(90);
+        column.setMinWidth(90);
       }
     }
+    // 设置根据置信值排序
+    TableRowSorter<TableModel> sorter = new TableRowSorter<>(SuggestionTable.getModel());
+    ArrayList<RowSorter.SortKey> sorterKeys = new ArrayList<>();
+    sorterKeys.add(new RowSorter.SortKey(3, SortOrder.DESCENDING));
+    sorter.setSortKeys(sorterKeys);
+    sorter.setSortable(0, false);
+    sorter.setSortable(1, false);
+    sorter.setSortable(2, false);
+    SuggestionTable.setRowSorter(sorter);
+    SuggestionTable.setAutoCreateRowSorter(false);
 
     ContextTree.setRootVisible(false);
     ContextTree.setModel(DataCenter.TREE_MODEL);

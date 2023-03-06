@@ -1,10 +1,10 @@
 package com.example.demo1.plugin.listener;
 
 import com.example.demo1.operation.TreeDataOperator;
+import com.intellij.openapi.editor.CaretActionListener;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
-import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.editor.event.CaretListener;
+import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
@@ -22,12 +22,12 @@ public class EditorFileListener implements FileEditorManagerListener {
     this.project = project;
   }
 
+
 //  @Override
 //  public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
 //    FileEditorManagerListener.super.fileOpened(source, file);
 //    addNewTaskContext(file);
 //  }
-
   @Override
   public void selectionChanged(@NotNull FileEditorManagerEvent event) {
     FileEditorManagerListener.super.selectionChanged(event);
@@ -41,8 +41,10 @@ public class EditorFileListener implements FileEditorManagerListener {
     if (selectedTextEditor == null) {
       return;
     }
-    selectedTextEditor.getSelectionModel().addSelectionListener(new MySelectionListener());
+    selectedTextEditor.addEditorMouseListener(new MyEditorMouseListener());
+    selectedTextEditor.getCaretModel().addCaretListener(new MyCaretListener());
 //    addNewTaskContext(newFile);
+//    selectedTextEditor.getSelectionModel().addSelectionListener(new MySelectionListener());
   }
 
   public void addNewTaskContext(@NotNull VirtualFile file) {

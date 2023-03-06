@@ -2,25 +2,25 @@ package com.example.demo1.plugin.listener;
 
 import com.example.demo1.operation.TreeDataOperator;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.event.SelectionEvent;
-import com.intellij.openapi.editor.event.SelectionListener;
+import com.intellij.openapi.editor.event.CaretEvent;
+import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * 选择事件监听
- */
-public class MySelectionListener implements SelectionListener {
+public class MyCaretListener implements CaretListener {
   @Override
-  public void selectionChanged(@NotNull SelectionEvent e) {
-    SelectionListener.super.selectionChanged(e);
-    // 只有当鼠标单击没有选中文本的时候才不捕获
-    if (MarkFlag.isMouseInEditor && e.getNewRange().getStartOffset() == e.getNewRange().getEndOffset()) {
+  public void caretPositionChanged(@NotNull CaretEvent e) {
+    CaretListener.super.caretPositionChanged(e);
+    if (e.getCaret() == null) {
+      return;
+    }
+    // 只有当鼠标在编辑器类并没有选中文本的时候才不捕获
+    if (MarkFlag.isMouseInEditor && e.getCaret().getSelectionStart() == e.getCaret().getSelectionEnd()) {
       return;
     }
     Editor editor = e.getEditor();
-    if (editor == null || editor.getProject() == null) {
+    if (editor.getProject() == null) {
       return;
     }
     PsiFile psiFile = PsiDocumentManager.getInstance(editor.getProject()).getPsiFile(editor.getDocument());

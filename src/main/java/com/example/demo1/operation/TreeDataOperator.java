@@ -92,9 +92,13 @@ public class TreeDataOperator {
       DefaultMutableTreeNode newNode = getNewNode(psiField, false);
       DataCenter.TREE_MODEL.insertNodeInto(newNode, getTreeModelRoot(), getTreeModelRoot().getChildCount());
     }
+
     DefaultMutableTreeNode findNode = findExist(containingClass);
     if (findNode == null) {
       // 没有捕获到父节点时，直接将他添加到根节点下
+      if (whetherSingleExist(psiField)) {
+        return;
+      }
       DefaultMutableTreeNode newField = getNewNode(psiField, false);
       DataCenter.TREE_MODEL.insertNodeInto(newField, getTreeModelRoot(), getTreeModelRoot().getChildCount());
       DataCenter.TREE_MODEL.reload();
@@ -134,6 +138,9 @@ public class TreeDataOperator {
     }
     DefaultMutableTreeNode findNode = findExist(containingClass);
     if (findNode == null) {
+      if (whetherSingleExist(psiMethod)) {
+        return;
+      }
       DefaultMutableTreeNode newMethod = getNewNode(psiMethod, false);
       DataCenter.TREE_MODEL.insertNodeInto(newMethod, getTreeModelRoot(), getTreeModelRoot().getChildCount());
       DataCenter.TREE_MODEL.reload();
@@ -216,14 +223,21 @@ public class TreeDataOperator {
   }
 
   /**
-   * 判断节点中是否存在改类
+   * 判断第二层节点中是否存在 FIELD和 METHOD
    *
-   * @param psiClass 需要判断的类节点
+   * @param psiElement 需要判断的FIELD和METHOD节点
    * @return 是否存在
    */
-  public static boolean whetherExist(PsiClass psiClass) {
+  public static boolean whetherSingleExist(PsiElement psiElement) {
     DefaultMutableTreeNode root = getTreeModelRoot();
-    return traversal(root, psiClass);
+    for (int i = 0; i < root.getChildCount(); i++) {
+      DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+      ContextTaskData userObject = (ContextTaskData) node.getUserObject();
+      if(userObject.getCaptureElement().equals(psiElement)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

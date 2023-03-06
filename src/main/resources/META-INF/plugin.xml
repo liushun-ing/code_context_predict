@@ -26,7 +26,8 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.example.demo1.plugin.window.CodePredictWindowFactory" id="CodePredictWindow" anchor="bottom" icon="/img/codePredict.svg" />
+        <toolWindow factoryClass="com.example.demo1.plugin.window.CodePredictWindowFactory" id="CodePredictWindow"
+                    anchor="bottom" icon="/img/codePredict.svg"/>
     </extensions>
 
     <actions>
@@ -34,9 +35,8 @@
     </actions>
 
     <projectListeners>
-        <listener
-                class="com.example.demo1.plugin.listener.EditorFileListener"
-                topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+        <listener class="com.example.demo1.plugin.listener.EditorFileListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
         <listener class="com.example.demo1.plugin.listener.MyProjectListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </projectListeners>

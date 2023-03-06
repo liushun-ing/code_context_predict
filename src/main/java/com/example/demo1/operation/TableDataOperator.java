@@ -150,7 +150,6 @@ public class TableDataOperator {
     // 执行VF3子图匹配算法
     MainEntry mainEntry = new MainEntry();
     ArrayList<ArrayList<Solution>> executeResult = mainEntry.execute(targetGraph);
-    System.out.println("execute Result: " + executeResult);
     // 计算置信度
     HashMap<Integer, Double> confidenceMap = calculateConfidence(executeResult, targetGraph);
     // 更新SUGGESTION_LIST,需要过滤掉时间过期的
