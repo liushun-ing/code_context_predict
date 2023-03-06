@@ -4,7 +4,6 @@ import com.example.demo1.data.Constants;
 import com.example.demo1.data.ContextTaskData;
 import com.example.demo1.data.DataCenter;
 import com.example.demo1.data.SuggestionData;
-import com.example.demo1.plugin.model.MyTableModel;
 import com.example.demo1.plugin.render.MyTableCellRender;
 import com.example.demo1.plugin.render.MyTreeNodeRenderer;
 import com.intellij.codeInsight.navigation.NavigationUtil;
@@ -18,10 +17,8 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class CodePredictWindow {
   private JPanel CodePredict;
@@ -41,7 +38,7 @@ public class CodePredictWindow {
     for (int i = 0; i < 4; i++) {
       column = SuggestionTable.getColumnModel().getColumn(i);
       if (i == 0) {
-        column.setPreferredWidth(300); // first column is bigger
+        column.setPreferredWidth(300);
         column.setMinWidth(300);
         column.setCellRenderer(new MyTableCellRender());
       } else if (i == 1) {
@@ -55,7 +52,7 @@ public class CodePredictWindow {
         column.setMinWidth(90);
       }
     }
-    // 设置根据置信值排序
+    // 设置根据置信值排序，其余的列不能排序
     TableRowSorter<TableModel> sorter = new TableRowSorter<>(SuggestionTable.getModel());
     ArrayList<RowSorter.SortKey> sorterKeys = new ArrayList<>();
     sorterKeys.add(new RowSorter.SortKey(3, SortOrder.DESCENDING));
@@ -64,7 +61,6 @@ public class CodePredictWindow {
     sorter.setSortable(1, false);
     sorter.setSortable(2, false);
     SuggestionTable.setRowSorter(sorter);
-    SuggestionTable.setAutoCreateRowSorter(false);
 
     ContextTree.setRootVisible(false);
     ContextTree.setModel(DataCenter.TREE_MODEL);
@@ -74,6 +70,9 @@ public class CodePredictWindow {
   public CodePredictWindow(Project project, ToolWindow toolWindow) {
     init();
 
+    /**
+     * 任务树的鼠标事件
+     */
     ContextTree.addMouseListener(new MouseListener() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -83,6 +82,7 @@ public class CodePredictWindow {
         }
         DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
         ContextTaskData userObject = (ContextTaskData) lastPathComponent.getUserObject();
+        // 导航定位元素
         NavigationUtil.activateFileWithPsiElement((PsiElement) userObject.getCaptureElement());
       }
 
@@ -119,6 +119,9 @@ public class CodePredictWindow {
 //      }
 //    });
 
+    /**
+     * 建议表格的鼠标监听
+     */
     SuggestionTable.addMouseListener(new MouseListener() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -174,6 +177,11 @@ public class CodePredictWindow {
     });
   }
 
+  /**
+   * 获取代码窗口的主panel
+   *
+   * @return panel
+   */
   public JPanel getCodePredict() {
     return CodePredict;
   }

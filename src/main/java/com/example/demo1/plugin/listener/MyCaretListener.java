@@ -4,10 +4,14 @@ import com.example.demo1.operation.TreeDataOperator;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 编辑器光标事件
+ */
 public class MyCaretListener implements CaretListener {
   @Override
   public void caretPositionChanged(@NotNull CaretEvent e) {
@@ -15,7 +19,7 @@ public class MyCaretListener implements CaretListener {
     if (e.getCaret() == null) {
       return;
     }
-    // 只有当鼠标在编辑器类并没有选中文本的时候才不捕获
+    // 只有当鼠标在编辑器类并没有选中文本的时候才不捕获（说明是单机事件）
     if (MarkFlag.isMouseInEditor && e.getCaret().getSelectionStart() == e.getCaret().getSelectionEnd()) {
       return;
     }
@@ -30,7 +34,8 @@ public class MyCaretListener implements CaretListener {
     int offset = editor.getCaretModel().getOffset();
 
     PsiElement element = psiFile.findElementAt(offset);
-    if (element != null) {
+    // 确保索引已经构建
+    if (element != null && !DumbService.getInstance(editor.getProject()).isDumb()) {
       PsiField parentField = PsiTreeUtil.getParentOfType(element, PsiField.class);
       if (parentField != null) {
         TreeDataOperator.addNewData(parentField);

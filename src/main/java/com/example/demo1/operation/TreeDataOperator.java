@@ -75,6 +75,7 @@ public class TreeDataOperator {
     DefaultMutableTreeNode newNode = getNewNode(o, false);
     DataCenter.TREE_MODEL.insertNodeInto(newNode, getTreeModelRoot(), getTreeModelRoot().getChildCount());
     filterNodeInTimeInterval();
+    DataCenter.TREE_MODEL.reload();
   }
 
 
@@ -101,7 +102,6 @@ public class TreeDataOperator {
       }
       DefaultMutableTreeNode newField = getNewNode(psiField, false);
       DataCenter.TREE_MODEL.insertNodeInto(newField, getTreeModelRoot(), getTreeModelRoot().getChildCount());
-      DataCenter.TREE_MODEL.reload();
     } else {
       // 如果父节点已经捕获，就更新父节点时间，并添加该节点到父节点下
       for (int i = 0; i < findNode.getChildCount(); i++) {
@@ -118,6 +118,7 @@ public class TreeDataOperator {
       DataCenter.TREE_MODEL.insertNodeInto(newField, findNode, findNode.getChildCount());
     }
     filterNodeInTimeInterval();
+    DataCenter.TREE_MODEL.reload();
     TableDataOperator.executePrediction(psiField);
   }
 
@@ -143,7 +144,6 @@ public class TreeDataOperator {
       }
       DefaultMutableTreeNode newMethod = getNewNode(psiMethod, false);
       DataCenter.TREE_MODEL.insertNodeInto(newMethod, getTreeModelRoot(), getTreeModelRoot().getChildCount());
-      DataCenter.TREE_MODEL.reload();
     } else {
       for (int i = 0; i < findNode.getChildCount(); i++) {
         DefaultMutableTreeNode childAt = (DefaultMutableTreeNode) findNode.getChildAt(i);
@@ -159,6 +159,7 @@ public class TreeDataOperator {
       DataCenter.TREE_MODEL.insertNodeInto(newMethod, findNode, findNode.getChildCount());
     }
     filterNodeInTimeInterval();
+    DataCenter.TREE_MODEL.reload();
     TableDataOperator.executePrediction(psiMethod);
   }
 
@@ -182,6 +183,7 @@ public class TreeDataOperator {
       adjustTreeStructure(psiClass, exist);
     }
     filterNodeInTimeInterval();
+    DataCenter.TREE_MODEL.reload();
     TableDataOperator.executePrediction(psiClass);
   }
 

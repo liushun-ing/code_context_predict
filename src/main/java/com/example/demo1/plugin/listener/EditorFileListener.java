@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.CaretActionListener;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.CaretListener;
 import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
@@ -22,12 +23,6 @@ public class EditorFileListener implements FileEditorManagerListener {
     this.project = project;
   }
 
-
-//  @Override
-//  public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
-//    FileEditorManagerListener.super.fileOpened(source, file);
-//    addNewTaskContext(file);
-//  }
   @Override
   public void selectionChanged(@NotNull FileEditorManagerEvent event) {
     FileEditorManagerListener.super.selectionChanged(event);
@@ -43,8 +38,15 @@ public class EditorFileListener implements FileEditorManagerListener {
     }
     selectedTextEditor.addEditorMouseListener(new MyEditorMouseListener());
     selectedTextEditor.getCaretModel().addCaretListener(new MyCaretListener());
-//    addNewTaskContext(newFile);
-//    selectedTextEditor.getSelectionModel().addSelectionListener(new MySelectionListener());
+    // 只有当项目的索引已经构建好之后，才添加元素，不然分析psi树会报错
+    if (!DumbService.getInstance(project).isDumb()) {
+      addNewTaskContext(newFile);
+    }
+//    DumbService.isDumb(project);
+    // 等待项目处于 smart模式 时，再执行业务操作
+//    DumbService.getInstance(project).runWhenSmart(()->{
+//      // 业务逻辑
+//    });
   }
 
   public void addNewTaskContext(@NotNull VirtualFile file) {

@@ -4,6 +4,9 @@ import com.intellij.openapi.editor.event.EditorMouseEvent;
 import com.intellij.openapi.editor.event.EditorMouseListener;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 编辑器鼠标事件
+ */
 public class MyEditorMouseListener implements EditorMouseListener {
   @Override
   public void mouseEntered(@NotNull EditorMouseEvent event) {
