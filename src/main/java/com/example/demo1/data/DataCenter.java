@@ -1,5 +1,7 @@
 package com.example.demo1.data;
 
+import com.example.demo1.myjstereocode.entry.StereotypeAssigner;
+import com.example.demo1.myjstereocode.info.ProjectInformation;
 import com.example.demo1.plugin.model.MyTableModel;
 import com.intellij.openapi.project.Project;
 
@@ -16,6 +18,16 @@ public class DataCenter {
    * 当前打开的项目对象
    */
   public static Project PROJECT;
+
+  /**
+   * 项目信息
+   */
+  public static ProjectInformation PROJECT_INFORMATION;
+
+  /**
+   * 原型分配器
+   */
+  public static StereotypeAssigner STEREOTYPE_ASSIGNER;
 
   /**
    * 时间间隔
@@ -49,6 +61,9 @@ public class DataCenter {
    */
   public static void reset(Project project) {
     PROJECT = project;
+    PROJECT_INFORMATION = new ProjectInformation(project);
+    STEREOTYPE_ASSIGNER = new StereotypeAssigner();
+    STEREOTYPE_ASSIGNER.setParameters(PROJECT_INFORMATION.getMethodsMean(), PROJECT_INFORMATION.getMethodsStdDev());
     TIME_INTERVAL = 5;
     PREDICTION_STEP = 1;
     SUGGESTION_LIST.clear();

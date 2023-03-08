@@ -413,14 +413,8 @@ public class TargetGraphOperator {
     ArrayList<Vertex> vertices = targetGraph.getVertices();
     for (Vertex v : vertices) {
       // do stereotype assign
-      String stereotype = "";
-      if (v.getPsiElement() instanceof PsiField) {
-        stereotype = "FIELD";
-      } else if (v.getPsiElement() instanceof PsiMethod) {
-        stereotype = "COMMAND-COLLABORATOR";
-      } else if (v.getPsiElement() instanceof PsiClass) {
-        stereotype = "ENTITY";
-      }
+      String stereotype = DataCenter.STEREOTYPE_ASSIGNER.assignStereotypes(v.getPsiElement());
+      System.out.println("stereotype assigned: " + stereotype);
       v.setLabel(stereotype);
     }
   }

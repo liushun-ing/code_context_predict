@@ -4,6 +4,7 @@ import com.example.demo1.data.Constants;
 import com.example.demo1.data.ContextTaskData;
 import com.example.demo1.data.DataCenter;
 import com.example.demo1.data.SuggestionData;
+import com.example.demo1.plugin.listener.MarkFlag;
 import com.example.demo1.plugin.render.MyTableCellRender;
 import com.example.demo1.plugin.render.MyTreeNodeRenderer;
 import com.intellij.codeInsight.navigation.NavigationUtil;
@@ -97,7 +98,8 @@ public class CodePredictWindow {
 
       @Override
       public void mouseEntered(MouseEvent e) {
-
+        // 进入树也需要防止捕捉
+        MarkFlag.isMouseInEditor = true;
       }
 
       @Override
@@ -143,7 +145,8 @@ public class CodePredictWindow {
 
       @Override
       public void mouseEntered(MouseEvent e) {
-
+        // 进入表格也需要防止捕捉
+        MarkFlag.isMouseInEditor = true;
       }
 
       @Override
