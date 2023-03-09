@@ -85,7 +85,7 @@ public class TableDataOperator {
       DataCenter.TABLE_MODEL.removeRow(i);
     }
     // 对数据根据置信值进行排序
-    DataCenter.SUGGESTION_LIST.sort(Comparator.comparing(SuggestionData::getConfidence));
+    DataCenter.SUGGESTION_LIST.sort(Comparator.comparing(SuggestionData::getConfidence, Comparator.reverseOrder()));
     for (int i = 0; i < DataCenter.SUGGESTION_LIST.size(); i++) {
       DataCenter.TABLE_MODEL.addRow(TableDataOperator.convertSuggestionData(DataCenter.SUGGESTION_LIST.get(i)));
     }
@@ -94,43 +94,15 @@ public class TableDataOperator {
   /**
    * 执行field元素的代码预测，包括构建目标图，分配原型，VF3子图匹配，计算置信值，更新table列表
    *
-   * @param psiField 目标感兴趣PsiField
+   * @param psiElement 目标感兴趣PsiField
    */
-  public static void executePrediction(PsiField psiField) {
-    System.out.println("field prediction start");
-    if (psiField == null) {
+  public static void executePrediction(PsiElement psiElement) {
+    System.out.println("psiElement prediction start");
+    if (psiElement == null) {
       return;
     }
-    commonExecute(TargetGraphOperator.buildTargetGraph(psiField), psiField);
-    System.out.println("field prediction complete");
-  }
-
-  /**
-   * 执行method元素的代码预测，包括构建目标图，VF3子图匹配，计算置信值，更新table列表
-   *
-   * @param psiMethod 感兴趣method元素
-   */
-  public static void executePrediction(PsiMethod psiMethod) {
-    System.out.println("method prediction start");
-    if (psiMethod == null) {
-      return;
-    }
-    commonExecute(TargetGraphOperator.buildTargetGraph(psiMethod), psiMethod);
-    System.out.println("method prediction complete");
-  }
-
-  /**
-   * 执行class元素的代码预测，包括构建目标图，VF3子图匹配，计算置信值，更新table列表
-   *
-   * @param psiClass 感兴趣Class元素
-   */
-  public static void executePrediction(PsiClass psiClass) {
-    System.out.println("class prediction start");
-    if (psiClass == null) {
-      return;
-    }
-    commonExecute(TargetGraphOperator.buildTargetGraph(psiClass), psiClass);
-    System.out.println("class prediction complete");
+    commonExecute(TargetGraphOperator.buildTargetGraph(psiElement), psiElement);
+    System.out.println("psiElement prediction complete");
   }
 
   /**

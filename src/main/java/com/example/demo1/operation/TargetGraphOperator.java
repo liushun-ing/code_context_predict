@@ -100,6 +100,9 @@ public class TargetGraphOperator {
     if (DataCenter.PREDICTION_STEP == 2) {
       extendTwoStepGraph(vertices, edges);
     }
+    if (DataCenter.PREDICTION_STEP == 3) {
+      extendThreeStepGraph(vertices, edges);
+    }
     return new Graph(vertices, edges);
   }
 
@@ -361,11 +364,36 @@ public class TargetGraphOperator {
    *
    * @param vertices 节点集合
    * @param edges    边集合
+   *
+   * @return 新增的节点数
    */
-  public static void extendTwoStepGraph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
+  public static int extendTwoStepGraph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
     // 从第二个节点开始遍历扩展就好了，注意扩展的截至点
     int length = vertices.size();
     for (int i = 1; i < length; i++) {
+      Vertex currVertex = vertices.get(i);
+      if (currVertex.getPsiElement() instanceof PsiField) {
+        extendFieldGraph(currVertex, vertices, edges);
+      } else if (currVertex.getPsiElement() instanceof PsiMethod) {
+        extendMethodGraph(currVertex, vertices, edges);
+      } else if (currVertex.getPsiElement() instanceof PsiClass) {
+        extendClassGraph(currVertex, vertices, edges);
+      }
+    }
+    return length;
+  }
+
+  /**
+   * 3步扩展目标图
+   *
+   * @param vertices 节点集合
+   * @param edges    边集合
+   */
+  public static void extendThreeStepGraph(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
+    // 注意扩展的截至点
+    int start = extendTwoStepGraph(vertices, edges);
+    int end = vertices.size();
+    for (int i = start; i < end; i++) {
       Vertex currVertex = vertices.get(i);
       if (currVertex.getPsiElement() instanceof PsiField) {
         extendFieldGraph(currVertex, vertices, edges);

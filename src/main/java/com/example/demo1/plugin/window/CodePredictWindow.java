@@ -4,6 +4,7 @@ import com.example.demo1.data.Constants;
 import com.example.demo1.data.ContextTaskData;
 import com.example.demo1.data.DataCenter;
 import com.example.demo1.data.SuggestionData;
+import com.example.demo1.operation.TableDataOperator;
 import com.example.demo1.plugin.listener.MarkFlag;
 import com.example.demo1.plugin.render.MyTableCellRender;
 import com.example.demo1.plugin.render.MyTreeNodeRenderer;
@@ -80,6 +81,8 @@ public class CodePredictWindow {
         ContextTaskData userObject = (ContextTaskData) lastPathComponent.getUserObject();
         // 导航定位元素
         NavigationUtil.activateFileWithPsiElement((PsiElement) userObject.getCaptureElement());
+        // 点击树的时候，重新预测一下
+        TableDataOperator.executePrediction((PsiElement) userObject.getCaptureElement());
       }
 
       @Override
@@ -93,13 +96,13 @@ public class CodePredictWindow {
 
       @Override
       public void mouseEntered(MouseEvent e) {
-        // 进入树也需要防止捕捉
+        // 防止点击改变caret也进行新的捕捉和预测
         MarkFlag.isMouseInEditor = true;
       }
 
       @Override
       public void mouseExited(MouseEvent e) {
-
+        MarkFlag.isMouseInEditor = false;
       }
     });
 
@@ -124,13 +127,12 @@ public class CodePredictWindow {
 
       @Override
       public void mouseEntered(MouseEvent e) {
-        // 进入表格也需要防止捕捉
         MarkFlag.isMouseInEditor = true;
       }
 
       @Override
       public void mouseExited(MouseEvent e) {
-
+        MarkFlag.isMouseInEditor = false;
       }
     });
 

@@ -54,6 +54,7 @@
               <model>
                 <item value="1 step"/>
                 <item value="2 step"/>
+                <item value="3 step"/>
               </model>
             </properties>
           </component>
