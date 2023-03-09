@@ -14,12 +14,9 @@ import com.intellij.psi.PsiElement;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class CodePredictWindow {
   private JPanel CodePredict;
@@ -53,15 +50,16 @@ public class CodePredictWindow {
         column.setMinWidth(90);
       }
     }
+    // 这样会使table错位，采用自行对Suggestion进行排序
     // 设置根据置信值排序，其余的列不能排序
-    TableRowSorter<TableModel> sorter = new TableRowSorter<>(SuggestionTable.getModel());
-    ArrayList<RowSorter.SortKey> sorterKeys = new ArrayList<>();
-    sorterKeys.add(new RowSorter.SortKey(3, SortOrder.DESCENDING));
-    sorter.setSortKeys(sorterKeys);
-    sorter.setSortable(0, false);
-    sorter.setSortable(1, false);
-    sorter.setSortable(2, false);
-    SuggestionTable.setRowSorter(sorter);
+//    TableRowSorter<TableModel> sorter = new TableRowSorter<>(SuggestionTable.getModel());
+//    ArrayList<RowSorter.SortKey> sorterKeys = new ArrayList<>();
+//    sorterKeys.add(new RowSorter.SortKey(3, SortOrder.DESCENDING));
+//    sorter.setSortKeys(sorterKeys);
+//    sorter.setSortable(0, false);
+//    sorter.setSortable(1, false);
+//    sorter.setSortable(2, false);
+//    SuggestionTable.setRowSorter(sorter);
 
     ContextTree.setRootVisible(false);
     ContextTree.setModel(DataCenter.TREE_MODEL);
@@ -71,9 +69,6 @@ public class CodePredictWindow {
   public CodePredictWindow(Project project, ToolWindow toolWindow) {
     init();
 
-    /**
-     * 任务树的鼠标事件
-     */
     ContextTree.addMouseListener(new MouseListener() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -107,23 +102,7 @@ public class CodePredictWindow {
 
       }
     });
-    // 树的点击事件
-//    TreeSelectionModel selectionModel1 = ContextTree.getSelectionModel();
-//    selectionModel1.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION); //设置为单选
-//    selectionModel1.addTreeSelectionListener(new TreeSelectionListener() {
-//      @Override
-//      public void valueChanged(TreeSelectionEvent e) {
-//        TreePath newLeadSelectionPath = e.getNewLeadSelectionPath();
-//        DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) newLeadSelectionPath.getLastPathComponent();
-//        ContextTaskData userObject = (ContextTaskData) lastPathComponent.getUserObject();
-//        NavigationUtil.activateFileWithPsiElement((PsiElement) userObject.getCaptureElement());
-//        ContextTree.removeSelectionPath(newLeadSelectionPath);
-//      }
-//    });
 
-    /**
-     * 建议表格的鼠标监听
-     */
     SuggestionTable.addMouseListener(new MouseListener() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -154,14 +133,6 @@ public class CodePredictWindow {
 
       }
     });
-    // 表格的点击事件
-//    ListSelectionModel selectionModel = SuggestionTable.getSelectionModel();
-//    selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//    selectionModel.addListSelectionListener(new ListSelectionListener() {
-//      @Override
-//      public void valueChanged(ListSelectionEvent e) {
-//      }
-//    });
 
     // 事件间隔的选择事件
     TimeInterval.addActionListener(new ActionListener() {

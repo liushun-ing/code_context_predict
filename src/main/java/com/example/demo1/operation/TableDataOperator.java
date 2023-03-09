@@ -12,10 +12,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * 表格数据操作类
@@ -86,6 +83,8 @@ public class TableDataOperator {
     for (int i = DataCenter.TABLE_MODEL.getRowCount() - 1; i >= 0; i--) {
       DataCenter.TABLE_MODEL.removeRow(i);
     }
+    // 对数据根据置信值进行排序
+    DataCenter.SUGGESTION_LIST.sort(Comparator.comparing(SuggestionData::getConfidence));
     for (int i = 0; i < DataCenter.SUGGESTION_LIST.size(); i++) {
       DataCenter.TABLE_MODEL.addRow(TableDataOperator.convertSuggestionData(DataCenter.SUGGESTION_LIST.get(i)));
     }
