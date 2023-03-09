@@ -68,11 +68,12 @@ public class TableDataOperator {
   }
 
   /**
-   * 更新SUGGESTION_LIST，在末尾追加
+   * 更新SUGGESTION_LIST，直接替换为新的列表
    *
    * @param list 新的列表项
    */
   public static void updateSuggestionList(List<SuggestionData> list) {
+    DataCenter.SUGGESTION_LIST.clear();
     DataCenter.SUGGESTION_LIST.addAll(list);
   }
 
