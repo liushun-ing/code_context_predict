@@ -7,15 +7,12 @@ import com.example.demo1.vf3.algorithm.MatchCouple;
 import com.example.demo1.vf3.algorithm.Solution;
 import com.example.demo1.vf3.graph.Graph;
 import com.example.demo1.vf3.graph.Vertex;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
 
 import java.util.*;
 
 /**
- * 表格数据操作类
+ * 表格数据操作类,包括预测逻辑
  */
 public class TableDataOperator {
   /**

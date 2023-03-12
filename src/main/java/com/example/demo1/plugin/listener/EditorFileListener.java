@@ -39,7 +39,7 @@ public class EditorFileListener implements FileEditorManagerListener {
     selectedTextEditor.addEditorMouseListener(new MyEditorMouseListener());
     selectedTextEditor.getCaretModel().addCaretListener(new MyCaretListener());
     // 只有当项目的索引已经构建好之后，才添加元素，不然分析psi树会报错
-    if (!DumbService.getInstance(project).isDumb()) {
+    if (!MarkFlag.isMouseInEditor && !DumbService.getInstance(project).isDumb()) {
       addNewTaskContext(newFile);
     }
 //    DumbService.isDumb(project);

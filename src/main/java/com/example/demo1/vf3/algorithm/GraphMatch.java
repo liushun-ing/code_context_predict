@@ -1,17 +1,21 @@
 package com.example.demo1.vf3.algorithm;
 
+import com.example.demo1.data.Constants;
 import com.example.demo1.vf3.graph.Edge;
 import com.example.demo1.vf3.graph.Graph;
 import com.example.demo1.vf3.graph.Vertex;
 import com.example.demo1.vf3.utils.ArrayUtils;
+import com.intellij.openapi.ui.Messages;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
  * VF3匹配算法逻辑类
  */
 public class GraphMatch {
+  private static Date startTime;
   private static ArrayList<Integer> NG1; // 模式图的节点处理顺序
   private static HashMap<Integer, Integer> Parent; // 节点的父节点
   private static ArrayList<Solution> Solutions; // 结果,可能有多个
@@ -20,6 +24,7 @@ public class GraphMatch {
    * 初始化
    */
   public static void initVF3() {
+    startTime = new Date();
     NG1 = new ArrayList<>();
     Parent = new HashMap<>();
     Solutions = new ArrayList<>();
@@ -44,7 +49,10 @@ public class GraphMatch {
       return Solutions;
     }
     ArrayList<MatchCouple> s0 = new ArrayList<>();
-    match(s0, patternGraph, targetGraph);
+    int result = match(s0, patternGraph, targetGraph);
+    if (result == 0) {
+      Messages.showMessageDialog(Constants.TIME_OUT_TIP, Constants.TIME_OUT_TITLE, Messages.getWarningIcon());
+    }
     return Solutions;
   }
 
@@ -54,26 +62,34 @@ public class GraphMatch {
    * @param sc           上一个匹配的状态
    * @param patternGraph 模式图
    * @param targetGraph  目标图
-   * @return 是否匹配
+   * @return 是否匹配,1匹配，-1未匹配，继续找其他可能，0超时，直接返回结束
    */
-  public static boolean match(ArrayList<MatchCouple> sc, Graph patternGraph, Graph targetGraph) {
+  public static int match(ArrayList<MatchCouple> sc, Graph patternGraph, Graph targetGraph) {
+    if (new Date().getTime() > startTime.getTime() + Constants.TIME_OUT) {
+      Solutions.clear();
+      return 0;
+    }
     if (isGoal(sc)) {
       Solutions.add(new Solution(new ArrayList<>(sc)));
-      return true;
+      return 1;
     }
     if (isDead(sc, targetGraph)) {
-      return false;
+      return -1;
     }
     MatchCouple coupleC = new MatchCouple(null, null);
     MatchCouple coupleN = getNextCandidate(sc, coupleC, patternGraph, targetGraph);
-    boolean result = false;
+    int result = -1;
     while (coupleN.getU() != null && coupleN.getV() != null) {
       if (isFeasible(sc, coupleN, patternGraph, targetGraph)) {
         ArrayList<MatchCouple> sn = new ArrayList<>(sc);
         // 替换新的节点对
         sn.add(new MatchCouple(coupleN.getU(), coupleN.getV()));
-        if (match(sn, patternGraph, targetGraph)) {
-          result = true;
+        int match = match(sn, patternGraph, targetGraph);
+        if (match == 1) {
+          result = 1;
+        } else if (match == 0) {
+          result = 0;
+          break;
         }
       }
       coupleN = getNextCandidate(sc, coupleN, patternGraph, targetGraph);
