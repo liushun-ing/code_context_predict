@@ -10,8 +10,6 @@ The plugin captures idea developer's interesting code element, and predicts what
 
 ## Project Explanation
 
-
-
 ### VF3
 
 **What is VF3?**
@@ -69,8 +67,17 @@ This package is used to store plugin's important data and constants, and also de
 
 This package encapsulates the main logic for handling the data.
 
-`TableDataOperator`: 
+- `TableDataOperator`: this operator is used to handle transactions of prediction table data, such as executing VF3 matching algorithm, transfering result solutions to object shown on table, and sorting table data according to confidence and so on. 
+- `TargetGraphOperator`: this operator is used to build target graph and expand target graph within prediction stepn using psi-tree.
+- `TreeDataOperator`: this operator is used to handle changes of context tree data, such as adding interesting psi element and adjusting tree structure.
 
-`TargetGraphOperator`: this operator is used to 
 
-`TreeDataOperator`: 
+
+### Plugin
+
+This package documents the implementation logic of the idea plug-in.
+
+- `listener`: some idea action's listener to monitor the occurrence of events
+- `model`: this is an implementation of <code>TableModel</code>  to store the cell value objects.
+- `render`: cell rendering rules
+- `window`: toolWindow's initial logic and toolWindow's events handle logic.
