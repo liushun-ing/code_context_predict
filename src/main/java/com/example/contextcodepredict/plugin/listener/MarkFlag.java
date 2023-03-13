@@ -15,11 +15,20 @@ public class MarkFlag {
   public static boolean isToolWindowActive = false;
 
   /**
-   * 插件是否活跃，活跃状态才可捕捉元素
+   * caret是否活跃，活跃状态才可捕捉元素，isToolWindowActive && isMouseInEditor
    *
    * @return 是否活跃
    */
-  public static boolean isPluginActive() {
+  public static boolean isPluginCaretActive() {
     return isToolWindowActive && isMouseInEditor;
+  }
+
+  /**
+   * 文件编辑器是否活跃，isToolWindowActive && !isMouseInEditor
+   *
+   * @return 是否活跃
+   */
+  public static boolean isPluginEditorActive() {
+    return isToolWindowActive && !isMouseInEditor;
   }
 }
