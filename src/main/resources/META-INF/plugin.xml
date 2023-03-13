@@ -39,5 +39,7 @@
                   topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
         <listener class="com.example.contextcodepredict.plugin.listener.MyProjectListener"
                   topic="com.intellij.openapi.project.ProjectManagerListener"/>
+        <listener class="com.example.contextcodepredict.plugin.listener.MyToolWindowListener"
+                  topic="com.intellij.openapi.wm.ex.ToolWindowManagerListener"/>
     </projectListeners>
 </idea-plugin>

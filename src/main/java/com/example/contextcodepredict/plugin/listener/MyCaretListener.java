@@ -20,7 +20,7 @@ public class MyCaretListener implements CaretListener {
       return;
     }
     // 只有当鼠标在编辑器类并没有选中文本的时候才不捕获（说明是单机事件）
-    if (MarkFlag.isMouseInEditor && e.getCaret().getSelectionStart() == e.getCaret().getSelectionEnd()) {
+    if (MarkFlag.isPluginActive() && e.getCaret().getSelectionStart() == e.getCaret().getSelectionEnd()) {
       return;
     }
     Editor editor = e.getEditor();
